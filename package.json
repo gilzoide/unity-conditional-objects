@@ -2,7 +2,7 @@
   "name": "com.gilzoide.conditional-objects",
   "displayName": "Conditional Objects",
   "version": "1.0.0",
-  "description": "Script for filtering GameObjects and Components based on running platform",
+  "description": "Script for filtering GameObjects and Components based on build platform",
   "homepage": "https://github.com/gilzoide/unity-conditional-objects",
   "license": "Unlicense",
   "author": {
