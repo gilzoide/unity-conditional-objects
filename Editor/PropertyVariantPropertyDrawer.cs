@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -10,11 +9,17 @@ namespace Gilzoide.ConditionalObjects.Editor
     [CustomPropertyDrawer(typeof(PropertyVariant))]
     public class PropertyVariantPropertyDrawer : PropertyDrawer
     {
+        private static readonly GUIContent _valueTitle = new GUIContent("Value");
+
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             SerializedProperty target = property.FindPropertyRelative(nameof(PropertyVariant.Target));
             SerializedProperty propertyPath = property.FindPropertyRelative(nameof(PropertyVariant.PropertyPath));
-            PropertyField(ref position, target);
+            
+            position.height = EditorGUI.GetPropertyHeight(target);
+            EditorGUI.PropertyField(position, target);
+            position.y += EditorGUIUtility.standardVerticalSpacing + position.height;
+
             using (new EditorGUI.DisabledScope(target.objectReferenceValue == null))
             {
                 (string[] objectPropertyNames, int index) = GetProperties(target.objectReferenceValue, propertyPath.stringValue);
@@ -24,7 +29,7 @@ namespace Gilzoide.ConditionalObjects.Editor
                     string selectedProperty = objectPropertyNames[newIndex].Replace("/", ".");
                     propertyPath.stringValue = selectedProperty;
                     position.y += EditorGUIUtility.standardVerticalSpacing + EditorStyles.popup.CalcHeight(GUIContent.none, position.width);
-                    ShowInput(position, property, GetPropertyReference(target, propertyPath));
+                    ShowInput(position, property, GetReferencedProperty(target, propertyPath));
                 }
             }
         }
@@ -37,7 +42,7 @@ namespace Gilzoide.ConditionalObjects.Editor
                 + EditorGUIUtility.standardVerticalSpacing
                 + EditorGUI.GetPropertyHeight(propertyPath);
             
-            SerializedProperty referencedProperty = GetPropertyReference(target, propertyPath);
+            SerializedProperty referencedProperty = GetReferencedProperty(target, propertyPath);
             if (referencedProperty != null)
             {
                 height += EditorGUIUtility.standardVerticalSpacing + EditorGUI.GetPropertyHeight(referencedProperty);
@@ -66,7 +71,7 @@ namespace Gilzoide.ConditionalObjects.Editor
                 case SerializedPropertyType.Vector3Int:
                 case SerializedPropertyType.Quaternion:
                 case SerializedPropertyType.Hash128:
-                    EditorGUI.PropertyField(position, GetVariantProperty(baseProperty, referenceProperty), new GUIContent("Value"));
+                    EditorGUI.PropertyField(position, GetVariantProperty(baseProperty, referenceProperty), _valueTitle);
                     break;
                 
                 case SerializedPropertyType.Enum:
@@ -74,7 +79,10 @@ namespace Gilzoide.ConditionalObjects.Editor
                     break;
 
                 case SerializedPropertyType.ObjectReference:
-                    // TODO
+                    SerializedProperty variantProperty = GetVariantProperty(baseProperty, referenceProperty);
+                    Type objectType = referenceProperty.FindObjectType();
+                    variantProperty.ResetObjectIfTypeMismatches(objectType);
+                    variantProperty.objectReferenceValue = EditorGUI.ObjectField(position, _valueTitle, variantProperty.objectReferenceValue, objectType, true);
                     break;
             }
         }
@@ -124,14 +132,7 @@ namespace Gilzoide.ConditionalObjects.Editor
             }
         }
 
-        private void PropertyField(ref Rect position, SerializedProperty property)
-        {
-            position.height = EditorGUI.GetPropertyHeight(property);
-            EditorGUI.PropertyField(position, property);
-            position.y += EditorGUIUtility.standardVerticalSpacing + position.height;
-        }
-
-        private (string[], int) GetProperties(Object obj, string currentProperty)
+        private (string[] names, int currentIndex) GetProperties(Object obj, string currentProperty)
         {
             int index = 0;
             var subproperties = new List<string>();
@@ -161,7 +162,7 @@ namespace Gilzoide.ConditionalObjects.Editor
             return (subproperties.ToArray(), index);
         }
 
-        private SerializedProperty GetPropertyReference(SerializedProperty target, SerializedProperty propertyPath)
+        private SerializedProperty GetReferencedProperty(SerializedProperty target, SerializedProperty propertyPath)
         {
             return target.objectReferenceValue != null
                 ? new SerializedObject(target.objectReferenceValue).FindProperty(propertyPath.stringValue)
