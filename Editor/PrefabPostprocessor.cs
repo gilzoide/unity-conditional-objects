@@ -7,17 +7,17 @@ namespace Gilzoide.ConditionalObjects.Editor
     {
         void OnPostprocessPrefab(GameObject gameObject)
         {
-            ConditionalObjects[] foundComponents = gameObject.GetComponentsInChildren<ConditionalObjects>();
+            IObjectModifierByPlatform[] foundComponents = gameObject.GetComponentsInChildren<IObjectModifierByPlatform>();
             if (foundComponents == null || foundComponents.Length == 0)
             {
                 return;
             }
 
             BuildTarget selectedBuildTarget = context.selectedBuildTarget;
-            foreach (ConditionalObjects conditionalObjects in foundComponents)
+            foreach (IObjectModifierByPlatform conditionalObjects in foundComponents)
             {
                 conditionalObjects.ApplyForTarget(selectedBuildTarget);
-                Object.DestroyImmediate(conditionalObjects, true);
+                Object.DestroyImmediate((Object) conditionalObjects, true);
             }
         }
     }
