@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
@@ -9,17 +11,14 @@ namespace Gilzoide.ConditionalObjects.Editor
         [PostProcessScene]
         static void OnPostprocessScene()
         {
-            ConditionalObjects[] foundComponents = Object.FindObjectsOfType<ConditionalObjects>();
-            if (foundComponents == null || foundComponents.Length == 0)
-            {
-                return;
-            }
-
+            IEnumerable<IObjectModifierByPlatform> foundComponents = Object.FindObjectsOfType<MonoBehaviour>()
+                .OfType<IObjectModifierByPlatform>();
+            
             BuildTarget selectedBuildTarget = EditorUserBuildSettings.activeBuildTarget;
-            foreach (ConditionalObjects conditionalObjects in foundComponents)
+            foreach (IObjectModifierByPlatform conditionalObjects in foundComponents)
             {
                 conditionalObjects.ApplyForTarget(selectedBuildTarget);
-                Object.DestroyImmediate(conditionalObjects, true);
+                Object.DestroyImmediate((Object) conditionalObjects, true);
             }
         }
     }
