@@ -3,10 +3,10 @@ using UnityEngine;
 
 namespace Gilzoide.ConditionalObjects
 {
-    public class ConditionalProperties : MonoBehaviour, IObjectModifierByPlatform
+    public class PlatformDependentProperties : MonoBehaviour, IPlatformDependentObjectModifier
     {
 #if UNITY_EDITOR
-        public PlatformCondition Platforms;
+        public PlatformFilter Platforms;
         public PropertyVariant[] Properties;
 
         public void ApplyForTarget(BuildTarget buildTarget)

@@ -11,11 +11,11 @@ namespace Gilzoide.ConditionalObjects.Editor
         [PostProcessScene]
         static void OnPostprocessScene()
         {
-            IEnumerable<IObjectModifierByPlatform> foundComponents = Object.FindObjectsOfType<MonoBehaviour>()
-                .OfType<IObjectModifierByPlatform>();
+            IEnumerable<IPlatformDependentObjectModifier> foundComponents = Object.FindObjectsOfType<MonoBehaviour>()
+                .OfType<IPlatformDependentObjectModifier>();
             
             BuildTarget selectedBuildTarget = EditorUserBuildSettings.activeBuildTarget;
-            foreach (IObjectModifierByPlatform conditionalObjects in foundComponents)
+            foreach (IPlatformDependentObjectModifier conditionalObjects in foundComponents)
             {
                 conditionalObjects.ApplyForTarget(selectedBuildTarget);
                 Object.DestroyImmediate((Object) conditionalObjects, true);

@@ -7,14 +7,14 @@ namespace Gilzoide.ConditionalObjects.Editor
     {
         void OnPostprocessPrefab(GameObject gameObject)
         {
-            IObjectModifierByPlatform[] foundComponents = gameObject.GetComponentsInChildren<IObjectModifierByPlatform>();
+            IPlatformDependentObjectModifier[] foundComponents = gameObject.GetComponentsInChildren<IPlatformDependentObjectModifier>();
             if (foundComponents == null || foundComponents.Length == 0)
             {
                 return;
             }
 
             BuildTarget selectedBuildTarget = context.selectedBuildTarget;
-            foreach (IObjectModifierByPlatform conditionalObjects in foundComponents)
+            foreach (IPlatformDependentObjectModifier conditionalObjects in foundComponents)
             {
                 conditionalObjects.ApplyForTarget(selectedBuildTarget);
                 Object.DestroyImmediate((Object) conditionalObjects, true);

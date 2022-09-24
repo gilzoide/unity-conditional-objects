@@ -5,7 +5,7 @@ using UnityEditor;
 namespace Gilzoide.ConditionalObjects
 {
     [Serializable]
-    public class PlatformCondition
+    public class PlatformFilter
     {
 #if UNITY_EDITOR
         public enum FilterType
