@@ -1,3 +1,4 @@
+using Gilzoide.ConditionalObjects.Filters;
 using UnityEditor;
 using UnityEngine;
 
@@ -12,8 +13,12 @@ namespace Gilzoide.ConditionalObjects.Editor
             if (platforms.arraySize > 0)
             {
                 SerializedProperty filter = property.FindPropertyRelative(nameof(PlatformFilter.Filter));
-                PlatformFilter.FilterType  filterType = (PlatformFilter.FilterType) filter.enumValueIndex;
-                label.text = $"{(filterType == PlatformFilter.FilterType.Include ? "Only on" : "Unless on")}: {string.Join(", ", platforms.IterateEnumArrayStrings())}";
+                IncludeMode filterType = (IncludeMode) filter.enumValueIndex;
+                label.text += $": {(filterType == IncludeMode.Include ? "" : "! ")}{string.Join(", ", platforms.IterateEnumArrayStrings())}";
+            }
+            else
+            {
+                label.text += ": (empty)";
             }
             EditorGUI.PropertyField(position, property, label, true);
         }

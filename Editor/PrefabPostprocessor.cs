@@ -1,3 +1,5 @@
+#if UNITY_2020_2_OR_NEWER
+using Gilzoide.ConditionalObjects.Filters;
 using UnityEditor;
 using UnityEngine;
 
@@ -7,39 +9,25 @@ namespace Gilzoide.ConditionalObjects.Editor
     {
         void OnPostprocessPrefab(GameObject gameObject)
         {
-            ProcessPlatformDependent(gameObject);
-            ProcessDevelopmentDependent(gameObject);
-        }
-
-        void ProcessPlatformDependent(GameObject gameObject)
-        {
-            IPlatformDependentObjectModifier[] foundComponents = gameObject.GetComponentsInChildren<IPlatformDependentObjectModifier>();
+            FilteredObjectModifier[] foundComponents = gameObject.GetComponentsInChildren<FilteredObjectModifier>();
             if (foundComponents == null || foundComponents.Length == 0)
             {
                 return;
             }
 
-            BuildTarget selectedBuildTarget = context.selectedBuildTarget;
-            foreach (IPlatformDependentObjectModifier objectModifier in foundComponents)
-            {
-                objectModifier.ApplyForTarget(selectedBuildTarget);
-                Object.DestroyImmediate((Object) objectModifier, true);
-            }
-        }
-
-        void ProcessDevelopmentDependent(GameObject gameObject)
-        {
-            IDevelopmentDependentObjectModifier[] foundComponents = gameObject.GetComponentsInChildren<IDevelopmentDependentObjectModifier>();
-            if (foundComponents == null || foundComponents.Length == 0)
-            {
-                return;
-            }
-
-            context.DependsOnCustomDependency(DevelopmentDependency.DependencyName);
+            bool isEditor = !BuildPipeline.isBuildingPlayer;
             bool isDevelopment = DevelopmentDependency.IsDevelopment;
-            foreach (IDevelopmentDependentObjectModifier objectModifier in foundComponents)
+            BuildTarget selectedBuildTarget = context.selectedBuildTarget;
+            foreach (FilteredObjectModifier objectModifier in foundComponents)
             {
-                objectModifier.Apply(isDevelopment);
+                if (objectModifier.DevelopmentFilter != DevelopmentFilter.None)
+                {
+                    context.DependsOnCustomDependency(DevelopmentDependency.DependencyName);
+                }
+                if (objectModifier.ShouldApply(isEditor, isDevelopment, selectedBuildTarget))
+                {
+                    objectModifier.Apply();
+                }
                 Object.DestroyImmediate((Object) objectModifier, true);
             }
         }

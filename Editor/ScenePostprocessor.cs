@@ -1,4 +1,3 @@
-using System.Linq;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
@@ -10,20 +9,22 @@ namespace Gilzoide.ConditionalObjects.Editor
         [PostProcessScene]
         static void OnPostprocessScene()
         {
-            MonoBehaviour[] scripts = Object.FindObjectsOfType<MonoBehaviour>();
-            
-            BuildTarget selectedBuildTarget = EditorUserBuildSettings.activeBuildTarget;
-            foreach (IPlatformDependentObjectModifier conditionalObjects in scripts.OfType<IPlatformDependentObjectModifier>())
+            FilteredObjectModifier[] foundComponents = Object.FindObjectsOfType<FilteredObjectModifier>();
+            if (foundComponents == null || foundComponents.Length == 0)
             {
-                conditionalObjects.ApplyForTarget(selectedBuildTarget);
-                Object.DestroyImmediate((Object) conditionalObjects, true);
+                return;
             }
 
+            bool isEditor = !BuildPipeline.isBuildingPlayer;
             bool isDevelopment = DevelopmentDependency.IsDevelopment;
-            foreach (IDevelopmentDependentObjectModifier conditionalObjects in scripts.OfType<IDevelopmentDependentObjectModifier>())
+            BuildTarget selectedBuildTarget = EditorUserBuildSettings.activeBuildTarget;
+            foreach (FilteredObjectModifier objectModifier in foundComponents)
             {
-                conditionalObjects.Apply(isDevelopment);
-                Object.DestroyImmediate((Object) conditionalObjects, true);
+                if (objectModifier.ShouldApply(isEditor, isDevelopment, selectedBuildTarget))
+                {
+                    objectModifier.Apply();
+                }
+                Object.DestroyImmediate((Object) objectModifier, true);
             }
         }
     }
