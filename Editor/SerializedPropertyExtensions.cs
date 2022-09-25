@@ -50,7 +50,6 @@ namespace Gilzoide.ConditionalObjects.Editor
             }
         }
 
-
         private static IList<Type> ObjectSubclasses => _objectSubclasses != null ? _objectSubclasses : (_objectSubclasses = FindObjectSubclasses());
         private static IList<Type> _objectSubclasses;
         private static Regex _propertyTypeRegex = new Regex(@"\s*PPtr\W*(\w+)");

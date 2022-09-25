@@ -28,7 +28,9 @@ namespace Gilzoide.ConditionalObjects
         public Bounds Bounds;
         public BoundsInt BoundsInt;
         public Quaternion Quaternion;
+#if UNITY_2021_1_OR_NEWER
         public Hash128 Hash128;
+#endif
 
 #if UNITY_EDITOR
         public void Apply()
@@ -88,9 +90,11 @@ namespace Gilzoide.ConditionalObjects
                 case SerializedPropertyType.Quaternion:
                     property.quaternionValue = Quaternion;
                     break;
+#if UNITY_2021_1_OR_NEWER
                 case SerializedPropertyType.Hash128:
                     property.hash128Value = Hash128;
                     break;
+#endif
                 default:
                     throw new ArgumentOutOfRangeException(nameof(SerializedProperty.propertyType), $"Property of type {property.propertyType} is not supported");
             }

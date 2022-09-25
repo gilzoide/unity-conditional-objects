@@ -70,7 +70,9 @@ namespace Gilzoide.ConditionalObjects.Editor
                 case SerializedPropertyType.Vector2Int:
                 case SerializedPropertyType.Vector3Int:
                 case SerializedPropertyType.Quaternion:
+#if UNITY_2021_1_OR_NEWER
                 case SerializedPropertyType.Hash128:
+#endif
                     EditorGUI.PropertyField(position, GetVariantProperty(baseProperty, referenceProperty), _valueTitle);
                     break;
                 
@@ -125,8 +127,10 @@ namespace Gilzoide.ConditionalObjects.Editor
                     return variantProperty.FindPropertyRelative(nameof(PropertyVariant.BoundsInt));
                 case SerializedPropertyType.Quaternion:
                     return variantProperty.FindPropertyRelative(nameof(PropertyVariant.Quaternion));
+#if UNITY_2021_1_OR_NEWER
                 case SerializedPropertyType.Hash128:
                     return variantProperty.FindPropertyRelative(nameof(PropertyVariant.Hash128));
+#endif
                 default:
                     throw new ArgumentOutOfRangeException(nameof(SerializedProperty.propertyType), $"Property of type {referenceProperty.propertyType} is not supported");
             }
