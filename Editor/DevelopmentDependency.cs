@@ -5,6 +5,7 @@ namespace Gilzoide.ConditionalObjects.Editor
 {
     public class DevelopmentDependency
     {
+#if UNITY_2020_2_OR_NEWER
         public static bool IsDevelopment { get; private set; }
         public static readonly string DependencyName = $"{typeof(DevelopmentDependency).FullName}.{nameof(IsDevelopment)}";
 
@@ -23,5 +24,8 @@ namespace Gilzoide.ConditionalObjects.Editor
                 AssetDatabase.RegisterCustomDependency(DependencyName, Hash128.Compute(IsDevelopment.ToString()));
             }
         }
+#else
+        public static bool IsDevelopment => EditorUserBuildSettings.development;
+#endif
     }
 }

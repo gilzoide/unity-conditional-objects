@@ -15,11 +15,15 @@ namespace Gilzoide.ConditionalObjects.Editor
                 return;
             }
 
-            bool isEditor = !BuildPipeline.isBuildingPlayer;
+            bool isEditor = EditorDependency.IsEditor;
             bool isDevelopment = DevelopmentDependency.IsDevelopment;
             BuildTarget selectedBuildTarget = context.selectedBuildTarget;
             foreach (FilteredObjectModifier objectModifier in foundComponents)
             {
+                if (objectModifier.EditorFilter != EditorFilter.None)
+                {
+                    context.DependsOnCustomDependency(EditorDependency.DependencyName);
+                }
                 if (objectModifier.DevelopmentFilter != DevelopmentFilter.None)
                 {
                     context.DependsOnCustomDependency(DevelopmentDependency.DependencyName);

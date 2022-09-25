@@ -15,7 +15,7 @@ namespace Gilzoide.ConditionalObjects.Editor
                 return;
             }
 
-            bool isEditor = !BuildPipeline.isBuildingPlayer;
+            bool isEditor = EditorDependency.IsEditor;
             bool isDevelopment = DevelopmentDependency.IsDevelopment;
             BuildTarget selectedBuildTarget = EditorUserBuildSettings.activeBuildTarget;
             foreach (FilteredObjectModifier objectModifier in foundComponents)
