@@ -12,7 +12,7 @@ namespace Gilzoide.ConditionalObjects.Editor
         [InitializeOnLoadMethod]
         private static void TrackDevelopmentBuild()
         {
-            IsDevelopment = EditorUserBuildSettings.development;
+            MarkIsDevelopment(EditorUserBuildSettings.development);
             EditorApplication.update += Update;
         }
 
@@ -20,9 +20,14 @@ namespace Gilzoide.ConditionalObjects.Editor
         {
             if (IsDevelopment != EditorUserBuildSettings.development)
             {
-                IsDevelopment = EditorUserBuildSettings.development;
-                AssetDatabase.RegisterCustomDependency(DependencyName, Hash128.Compute(IsDevelopment.ToString()));
+                MarkIsDevelopment(EditorUserBuildSettings.development);
             }
+        }
+
+        private static void MarkIsDevelopment(bool isDevelopment)
+        {
+            IsDevelopment = isDevelopment;
+            AssetDatabase.RegisterCustomDependency(DependencyName, Hash128.Compute(IsDevelopment.ToString()));
         }
 #else
         public static bool IsDevelopment => EditorUserBuildSettings.development;
