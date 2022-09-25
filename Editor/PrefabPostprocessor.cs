@@ -17,7 +17,6 @@ namespace Gilzoide.ConditionalObjects.Editor
 
             bool isEditor = EditorDependency.IsEditor;
             bool isDevelopment = DevelopmentDependency.IsDevelopment;
-            BuildTarget selectedBuildTarget = context.selectedBuildTarget;
             foreach (FilteredObjectModifier objectModifier in foundComponents)
             {
                 if (objectModifier.EditorFilter != EditorFilter.None)
@@ -28,6 +27,9 @@ namespace Gilzoide.ConditionalObjects.Editor
                 {
                     context.DependsOnCustomDependency(DevelopmentDependency.DependencyName);
                 }
+                BuildTarget selectedBuildTarget = objectModifier.PlatformFilter.IsEmpty
+                    ? BuildTarget.NoTarget
+                    : context.selectedBuildTarget;
                 if (objectModifier.ShouldApply(isEditor, isDevelopment, selectedBuildTarget))
                 {
                     objectModifier.Apply();
