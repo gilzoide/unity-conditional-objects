@@ -21,7 +21,6 @@ namespace Gilzoide.ConditionalObjects.Editor
             {
                 IsDevelopment = EditorUserBuildSettings.development;
                 AssetDatabase.RegisterCustomDependency(DependencyName, Hash128.Compute(IsDevelopment.ToString()));
-                AssetDatabase.Refresh();
             }
         }
     }
