@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditorInternal;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -93,6 +94,14 @@ namespace Gilzoide.ConditionalObjects.Editor
                         variantProperty.intValue = EditorGUI.Popup(position, _valueTitle.text, variantProperty.intValue, referenceProperty.enumDisplayNames);
                     }
                     break;
+                
+                case SerializedPropertyType.LayerMask:
+                {
+                    int layerMask = InternalEditorUtility.LayerMaskToConcatenatedLayersMask(variantProperty.intValue);
+                    layerMask = EditorGUI.MaskField(position, _valueTitle, layerMask, InternalEditorUtility.layers);
+                    variantProperty.intValue = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(layerMask);
+                    break;
+                }
 
                 case SerializedPropertyType.ObjectReference:
                 {
@@ -108,8 +117,9 @@ namespace Gilzoide.ConditionalObjects.Editor
         {
             switch (referenceProperty.propertyType)
             {
-                case SerializedPropertyType.Enum:
                 case SerializedPropertyType.Integer:
+                case SerializedPropertyType.Enum:
+                case SerializedPropertyType.LayerMask:
                     return variantProperty.FindPropertyRelative(nameof(PropertyVariant.Integer));
                 case SerializedPropertyType.Boolean:
                     return variantProperty.FindPropertyRelative(nameof(PropertyVariant.Boolean));
@@ -162,6 +172,7 @@ namespace Gilzoide.ConditionalObjects.Editor
                         : source.enumValueIndex;
                     break;
                 case SerializedPropertyType.Integer:
+                case SerializedPropertyType.LayerMask:
                     property.intValue = source.intValue;
                     break;
                 case SerializedPropertyType.Boolean:

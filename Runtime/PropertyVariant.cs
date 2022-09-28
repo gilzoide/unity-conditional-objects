@@ -39,16 +39,6 @@ namespace Gilzoide.ConditionalObjects
             SerializedProperty property = obj.FindProperty(PropertyPath);
             switch (property.propertyType)
             {
-                case SerializedPropertyType.Enum:
-                    if (property.IsEnumFlags())
-                    {
-                        property.enumValueFlag = (int) Integer;
-                    }
-                    else
-                    {
-                        property.enumValueIndex = (int) Integer;
-                    }
-                    break;
                 case SerializedPropertyType.Integer:
                     property.longValue = Integer;
                     break;
@@ -66,6 +56,19 @@ namespace Gilzoide.ConditionalObjects
                     break;
                 case SerializedPropertyType.ObjectReference:
                     property.objectReferenceValue = Object;
+                    break;
+                case SerializedPropertyType.LayerMask:
+                    property.intValue = (int) Integer;
+                    break;
+                case SerializedPropertyType.Enum:
+                    if (property.IsEnumFlags())
+                    {
+                        property.enumValueFlag = (int) Integer;
+                    }
+                    else
+                    {
+                        property.enumValueIndex = (int) Integer;
+                    }
                     break;
                 case SerializedPropertyType.Vector2:
                     property.vector2Value = Vector2;
