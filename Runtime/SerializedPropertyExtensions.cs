@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Gilzoide.ConditionalObjects.Editor
+namespace Gilzoide.ConditionalObjects
 {
     public static class SerializedPropertyExtensions
     {
@@ -41,7 +42,7 @@ namespace Gilzoide.ConditionalObjects.Editor
         {
             Type type = property.serializedObject.targetObject.GetType();
             string cacheKey = $"{type}.{property.propertyPath}";
-            if (_propertyCache.TryGetValue(cacheKey, out Type ret))
+            if (_propertyTypesCache.TryGetValue(cacheKey, out Type ret))
             {
                 return ret;
             }
@@ -63,7 +64,7 @@ namespace Gilzoide.ConditionalObjects.Editor
                 }
             }
 
-            _propertyCache[cacheKey] = type;
+            _propertyTypesCache[cacheKey] = type;
             return type;
         }
 
@@ -104,6 +105,7 @@ namespace Gilzoide.ConditionalObjects.Editor
 #endif
         }
 
-        private static Dictionary<string, Type> _propertyCache = new Dictionary<string, Type>();
+        private static Dictionary<string, Type> _propertyTypesCache = new Dictionary<string, Type>();
     }
 }
+#endif

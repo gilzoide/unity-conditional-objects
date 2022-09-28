@@ -39,6 +39,16 @@ namespace Gilzoide.ConditionalObjects
             SerializedProperty property = obj.FindProperty(PropertyPath);
             switch (property.propertyType)
             {
+                case SerializedPropertyType.Enum:
+                    if (property.IsEnumFlags())
+                    {
+                        property.enumValueFlag = (int) Integer;
+                    }
+                    else
+                    {
+                        property.enumValueIndex = (int) Integer;
+                    }
+                    break;
                 case SerializedPropertyType.Integer:
                     property.longValue = Integer;
                     break;
