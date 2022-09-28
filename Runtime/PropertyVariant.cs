@@ -94,6 +94,9 @@ namespace Gilzoide.ConditionalObjects
                 case SerializedPropertyType.AnimationCurve:
                     property.animationCurveValue = AnimationCurve;
                     break;
+                case SerializedPropertyType.Character:
+                    property.intValue = string.IsNullOrEmpty(String) ? 0 : String[0];
+                    break;
                 case SerializedPropertyType.Bounds:
                     property.boundsValue = Bounds;
                     break;

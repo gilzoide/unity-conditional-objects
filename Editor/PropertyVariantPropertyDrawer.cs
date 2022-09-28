@@ -110,6 +110,17 @@ namespace Gilzoide.ConditionalObjects.Editor
                     variantProperty.objectReferenceValue = EditorGUI.ObjectField(position, _valueTitle, variantProperty.objectReferenceValue, objectType, true);
                     break;
                 }
+
+                case SerializedPropertyType.Character:
+                {
+                    string c = EditorGUI.TextField(position, _valueTitle, variantProperty.stringValue);
+                    if (c.Length > 1)
+                    {
+                        c = c.Substring(0, 1);
+                    }
+                    variantProperty.stringValue = c;
+                    break;
+                }
             }
         }
 
@@ -126,6 +137,7 @@ namespace Gilzoide.ConditionalObjects.Editor
                 case SerializedPropertyType.Float:
                     return variantProperty.FindPropertyRelative(nameof(PropertyVariant.Float));
                 case SerializedPropertyType.String:
+                case SerializedPropertyType.Character:
                     return variantProperty.FindPropertyRelative(nameof(PropertyVariant.String));
                 case SerializedPropertyType.Color:
                     return variantProperty.FindPropertyRelative(nameof(PropertyVariant.Color));
@@ -182,6 +194,7 @@ namespace Gilzoide.ConditionalObjects.Editor
                     property.floatValue = source.floatValue;
                     break;
                 case SerializedPropertyType.String:
+                case SerializedPropertyType.Character:
                     property.stringValue = source.stringValue;
                     break;
                 case SerializedPropertyType.Color:
