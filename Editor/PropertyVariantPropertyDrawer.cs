@@ -45,7 +45,7 @@ namespace Gilzoide.ConditionalObjects.Editor
             SerializedProperty referencedProperty = GetReferencedProperty(target, propertyPath);
             if (referencedProperty != null)
             {
-                height += EditorGUIUtility.standardVerticalSpacing + EditorGUI.GetPropertyHeight(referencedProperty);
+                height += EditorGUIUtility.standardVerticalSpacing + EditorGUI.GetPropertyHeight(GetVariantProperty(property, referencedProperty), true);
             }
             return height;
         }
@@ -73,7 +73,7 @@ namespace Gilzoide.ConditionalObjects.Editor
 #if UNITY_2021_1_OR_NEWER
                 case SerializedPropertyType.Hash128:
 #endif
-                    EditorGUI.PropertyField(position, GetVariantProperty(baseProperty, referenceProperty), _valueTitle);
+                    EditorGUI.PropertyField(position, GetVariantProperty(baseProperty, referenceProperty), _valueTitle, true);
                     break;
                 
                 case SerializedPropertyType.Enum:
