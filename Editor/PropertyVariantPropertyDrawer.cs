@@ -29,7 +29,14 @@ namespace Gilzoide.ConditionalObjects.Editor
                     string selectedProperty = objectPropertyNames[newIndex].Replace("/", ".");
                     propertyPath.stringValue = selectedProperty;
                     position.y += EditorGUIUtility.standardVerticalSpacing + EditorStyles.popup.CalcHeight(GUIContent.none, position.width);
-                    ShowInput(position, property, GetReferencedProperty(target, propertyPath));
+                    
+                    SerializedProperty referencedProperty = GetReferencedProperty(target, propertyPath);
+                    SerializedProperty variantProperty = GetVariantProperty(property, referencedProperty);
+                    if (newIndex != index)
+                    {
+                        CopySerializedProperty(variantProperty, referencedProperty);
+                    }
+                    ShowInput(position, variantProperty, referencedProperty);
                 }
             }
         }
@@ -50,7 +57,7 @@ namespace Gilzoide.ConditionalObjects.Editor
             return height;
         }
 
-        private void ShowInput(Rect position, SerializedProperty baseProperty, SerializedProperty referenceProperty)
+        private void ShowInput(Rect position, SerializedProperty variantProperty, SerializedProperty referenceProperty)
         {
             switch (referenceProperty.propertyType)
             {
@@ -73,12 +80,10 @@ namespace Gilzoide.ConditionalObjects.Editor
 #if UNITY_2021_1_OR_NEWER
                 case SerializedPropertyType.Hash128:
 #endif
-                    EditorGUI.PropertyField(position, GetVariantProperty(baseProperty, referenceProperty), _valueTitle, true);
+                    EditorGUI.PropertyField(position, variantProperty, _valueTitle, true);
                     break;
                 
                 case SerializedPropertyType.Enum:
-                {
-                    SerializedProperty variantProperty = GetVariantProperty(baseProperty, referenceProperty);
                     if (referenceProperty.IsEnumFlags())
                     {
                         variantProperty.intValue = EditorGUI.MaskField(position, _valueTitle, variantProperty.intValue, referenceProperty.enumDisplayNames);
@@ -88,11 +93,9 @@ namespace Gilzoide.ConditionalObjects.Editor
                         variantProperty.intValue = EditorGUI.Popup(position, _valueTitle.text, variantProperty.intValue, referenceProperty.enumDisplayNames);
                     }
                     break;
-                }
 
                 case SerializedPropertyType.ObjectReference:
                 {
-                    SerializedProperty variantProperty = GetVariantProperty(baseProperty, referenceProperty);
                     Type objectType = referenceProperty.FindObjectType();
                     variantProperty.ResetObjectIfTypeMismatches(objectType);
                     variantProperty.objectReferenceValue = EditorGUI.ObjectField(position, _valueTitle, variantProperty.objectReferenceValue, objectType, true);
@@ -146,6 +149,74 @@ namespace Gilzoide.ConditionalObjects.Editor
 #endif
                 default:
                     throw new ArgumentOutOfRangeException(nameof(SerializedProperty.propertyType), $"Property of type {referenceProperty.propertyType} is not supported");
+            }
+        }
+
+        public static void CopySerializedProperty(SerializedProperty property, SerializedProperty source)
+        {
+            switch (source.propertyType)
+            {
+                case SerializedPropertyType.Enum:
+                    property.intValue = source.IsEnumFlags()
+                        ? source.enumValueFlag
+                        : source.enumValueIndex;
+                    break;
+                case SerializedPropertyType.Integer:
+                    property.intValue = source.intValue;
+                    break;
+                case SerializedPropertyType.Boolean:
+                    property.boolValue = source.boolValue;
+                    break;
+                case SerializedPropertyType.Float:
+                    property.floatValue = source.floatValue;
+                    break;
+                case SerializedPropertyType.String:
+                    property.stringValue = source.stringValue;
+                    break;
+                case SerializedPropertyType.Color:
+                    property.colorValue = source.colorValue;
+                    break;
+                case SerializedPropertyType.ObjectReference:
+                    property.objectReferenceValue = source.objectReferenceValue;
+                    break;
+                case SerializedPropertyType.Vector2:
+                    property.vector2Value = source.vector2Value;
+                    break;
+                case SerializedPropertyType.Vector3:
+                    property.vector3Value = source.vector3Value;
+                    break;
+                case SerializedPropertyType.Vector4:
+                    property.vector4Value = source.vector4Value;
+                    break;
+                case SerializedPropertyType.Vector2Int:
+                    property.vector2IntValue = source.vector2IntValue;
+                    break;
+                case SerializedPropertyType.Vector3Int:
+                    property.vector3IntValue = source.vector3IntValue;
+                    break;
+                case SerializedPropertyType.Rect:
+                    property.rectValue = source.rectValue;
+                    break;
+                case SerializedPropertyType.RectInt:
+                    property.rectIntValue = source.rectIntValue;
+                    break;
+                case SerializedPropertyType.AnimationCurve:
+                    property.animationCurveValue = source.animationCurveValue;
+                    break;
+                case SerializedPropertyType.Bounds:
+                    property.boundsValue = source.boundsValue;
+                    break;
+                case SerializedPropertyType.BoundsInt:
+                    property.boundsIntValue = source.boundsIntValue;
+                    break;
+                case SerializedPropertyType.Quaternion:
+                    property.quaternionValue = source.quaternionValue;
+                    break;
+#if UNITY_2021_1_OR_NEWER
+                case SerializedPropertyType.Hash128:
+                    property.hash128Value = source.hash128Value;
+                    break;
+#endif
             }
         }
 
