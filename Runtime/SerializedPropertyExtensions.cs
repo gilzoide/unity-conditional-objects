@@ -49,11 +49,11 @@ namespace Gilzoide.ConditionalObjects
 
             foreach (string propertyName in property.propertyPath.Split('.'))
             {
-                if (type.GetProperty(propertyName) is PropertyInfo prop)
+                if (type.GetProperty(propertyName, _findPropertyBindingFlags) is PropertyInfo prop)
                 {
                     type = prop.PropertyType;
                 }
-                else if (type.GetField(propertyName) is FieldInfo field)
+                else if (type.GetField(propertyName, _findPropertyBindingFlags) is FieldInfo field)
                 {
                     type = field.FieldType;
                 }
@@ -107,6 +107,7 @@ namespace Gilzoide.ConditionalObjects
 #endif
         }
 
+        private const BindingFlags _findPropertyBindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
         private static IList<Type> ObjectSubclasses => _objectSubclasses != null ? _objectSubclasses : (_objectSubclasses = FindObjectSubclasses());
         private static IList<Type> _objectSubclasses;
         private static readonly Regex _propertyTypeRegex = new Regex(@"\s*PPtr\W*(\w+)");
@@ -126,7 +127,7 @@ namespace Gilzoide.ConditionalObjects
         private static readonly Dictionary<string, Type> _propertyTypesCache = new Dictionary<string, Type>();
 
 #if !UNITY_2022_1_OR_NEWER
-        private static readonly PropertyInfo SerializedProperty_gradientValue = typeof(SerializedProperty).GetProperty("gradientValue", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+        private static readonly PropertyInfo SerializedProperty_gradientValue = typeof(SerializedProperty).GetProperty("gradientValue", _findPropertyBindingFlags);
 #endif
     }
 }
