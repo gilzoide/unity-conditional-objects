@@ -89,9 +89,27 @@ namespace Gilzoide.ConditionalObjects
                 : false;
         }
 
+        public static Gradient GetGradient(this SerializedProperty property)
+        {
+#if UNITY_2022_1_OR_NEWER
+            return property.gradientValue;
+#else
+            return (Gradient) SerializedProperty_gradientValue.GetValue(property);
+#endif
+        }
+
+        public static void SetGradient(this SerializedProperty property, Gradient gradient)
+        {
+#if UNITY_2022_1_OR_NEWER
+            property.gradientValue = gradient;
+#else
+            SerializedProperty_gradientValue.SetValue(property, gradient);
+#endif
+        }
+
         private static IList<Type> ObjectSubclasses => _objectSubclasses != null ? _objectSubclasses : (_objectSubclasses = FindObjectSubclasses());
         private static IList<Type> _objectSubclasses;
-        private static Regex _propertyTypeRegex = new Regex(@"\s*PPtr\W*(\w+)");
+        private static readonly Regex _propertyTypeRegex = new Regex(@"\s*PPtr\W*(\w+)");
 
         private static IList<Type> FindObjectSubclasses()
         {
@@ -105,7 +123,11 @@ namespace Gilzoide.ConditionalObjects
 #endif
         }
 
-        private static Dictionary<string, Type> _propertyTypesCache = new Dictionary<string, Type>();
+        private static readonly Dictionary<string, Type> _propertyTypesCache = new Dictionary<string, Type>();
+
+#if !UNITY_2022_1_OR_NEWER
+        private static readonly PropertyInfo SerializedProperty_gradientValue = typeof(SerializedProperty).GetProperty("gradientValue", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+#endif
     }
 }
 #endif

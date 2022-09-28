@@ -27,6 +27,7 @@ namespace Gilzoide.ConditionalObjects
         public AnimationCurve AnimationCurve;
         public Bounds Bounds;
         public BoundsInt BoundsInt;
+        public Gradient Gradient;
         public Quaternion Quaternion;
 #if UNITY_2021_1_OR_NEWER
         public Hash128 Hash128;
@@ -102,6 +103,9 @@ namespace Gilzoide.ConditionalObjects
                     break;
                 case SerializedPropertyType.BoundsInt:
                     property.boundsIntValue = BoundsInt;
+                    break;
+                case SerializedPropertyType.Gradient:
+                    property.SetGradient(Gradient);
                     break;
                 case SerializedPropertyType.Quaternion:
                     property.quaternionValue = Quaternion;

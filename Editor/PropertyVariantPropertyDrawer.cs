@@ -121,6 +121,14 @@ namespace Gilzoide.ConditionalObjects.Editor
                     variantProperty.stringValue = c;
                     break;
                 }
+
+                case SerializedPropertyType.Gradient:
+                {
+                    Gradient gradient = variantProperty.GetGradient();
+                    gradient = EditorGUI.GradientField(position, _valueTitle, gradient);
+                    variantProperty.SetGradient(gradient);
+                    break;
+                }
             }
         }
 
@@ -163,6 +171,8 @@ namespace Gilzoide.ConditionalObjects.Editor
                     return variantProperty.FindPropertyRelative(nameof(PropertyVariant.Bounds));
                 case SerializedPropertyType.BoundsInt:
                     return variantProperty.FindPropertyRelative(nameof(PropertyVariant.BoundsInt));
+                case SerializedPropertyType.Gradient:
+                    return variantProperty.FindPropertyRelative(nameof(PropertyVariant.Gradient));
                 case SerializedPropertyType.Quaternion:
                     return variantProperty.FindPropertyRelative(nameof(PropertyVariant.Quaternion));
 #if UNITY_2021_1_OR_NEWER
@@ -232,6 +242,9 @@ namespace Gilzoide.ConditionalObjects.Editor
                     break;
                 case SerializedPropertyType.BoundsInt:
                     property.boundsIntValue = source.boundsIntValue;
+                    break;
+                case SerializedPropertyType.Gradient:
+                    property.SetGradient(source.GetGradient());
                     break;
                 case SerializedPropertyType.Quaternion:
                     property.quaternionValue = source.quaternionValue;
