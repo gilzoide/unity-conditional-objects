@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
@@ -36,6 +37,36 @@ namespace Gilzoide.ConditionalObjects.Editor
             return typeof(Object);
         }
 
+        public static Type FindType(this SerializedProperty property)
+        {
+            Type type = property.serializedObject.targetObject.GetType();
+            string cacheKey = $"{type}.{property.propertyPath}";
+            if (_propertyCache.TryGetValue(cacheKey, out Type ret))
+            {
+                return ret;
+            }
+
+            foreach (string propertyName in property.propertyPath.Split('.'))
+            {
+                if (type.GetProperty(propertyName) is PropertyInfo prop)
+                {
+                    type = prop.PropertyType;
+                }
+                else if (type.GetField(propertyName) is FieldInfo field)
+                {
+                    type = field.FieldType;
+                }
+                else
+                {
+                    type = null;
+                    break;
+                }
+            }
+
+            _propertyCache[cacheKey] = type;
+            return type;
+        }
+
         public static void ResetObjectIfTypeMismatches(this SerializedProperty property, Type objectType)
         {
             if (property.objectReferenceValue == null)
@@ -48,6 +79,13 @@ namespace Gilzoide.ConditionalObjects.Editor
             {
                 property.objectReferenceValue = null;
             }
+        }
+
+        public static bool IsEnumFlags(this SerializedProperty property)
+        {
+            return property.FindType() is Type enumType
+                ? enumType.GetCustomAttribute<FlagsAttribute>() != null
+                : false;
         }
 
         private static IList<Type> ObjectSubclasses => _objectSubclasses != null ? _objectSubclasses : (_objectSubclasses = FindObjectSubclasses());
@@ -65,5 +103,7 @@ namespace Gilzoide.ConditionalObjects.Editor
                 .ToList();
 #endif
         }
+
+        private static Dictionary<string, Type> _propertyCache = new Dictionary<string, Type>();
     }
 }

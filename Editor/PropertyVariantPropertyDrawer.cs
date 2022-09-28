@@ -77,15 +77,27 @@ namespace Gilzoide.ConditionalObjects.Editor
                     break;
                 
                 case SerializedPropertyType.Enum:
-                    // TODO
+                {
+                    SerializedProperty variantProperty = GetVariantProperty(baseProperty, referenceProperty);
+                    if (referenceProperty.IsEnumFlags())
+                    {
+                        variantProperty.intValue = EditorGUI.MaskField(position, _valueTitle, variantProperty.intValue, referenceProperty.enumDisplayNames);
+                    }
+                    else
+                    {
+                        variantProperty.intValue = EditorGUI.Popup(position, _valueTitle.text, variantProperty.intValue, referenceProperty.enumDisplayNames);
+                    }
                     break;
+                }
 
                 case SerializedPropertyType.ObjectReference:
+                {
                     SerializedProperty variantProperty = GetVariantProperty(baseProperty, referenceProperty);
                     Type objectType = referenceProperty.FindObjectType();
                     variantProperty.ResetObjectIfTypeMismatches(objectType);
                     variantProperty.objectReferenceValue = EditorGUI.ObjectField(position, _valueTitle, variantProperty.objectReferenceValue, objectType, true);
                     break;
+                }
             }
         }
 
@@ -93,6 +105,7 @@ namespace Gilzoide.ConditionalObjects.Editor
         {
             switch (referenceProperty.propertyType)
             {
+                case SerializedPropertyType.Enum:
                 case SerializedPropertyType.Integer:
                     return variantProperty.FindPropertyRelative(nameof(PropertyVariant.Integer));
                 case SerializedPropertyType.Boolean:
