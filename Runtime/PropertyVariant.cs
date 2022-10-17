@@ -62,6 +62,7 @@ namespace Gilzoide.ConditionalObjects
                     property.intValue = (int) Integer;
                     break;
                 case SerializedPropertyType.Enum:
+#if UNITY_2021_1_OR_NEWER
                     if (property.IsEnumFlags())
                     {
                         property.enumValueFlag = (int) Integer;
@@ -70,6 +71,9 @@ namespace Gilzoide.ConditionalObjects
                     {
                         property.enumValueIndex = (int) Integer;
                     }
+#else
+                    property.enumValueIndex = (int) Integer;
+#endif
                     break;
                 case SerializedPropertyType.Vector2:
                     property.vector2Value = Vector2;

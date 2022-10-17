@@ -189,9 +189,13 @@ namespace Gilzoide.ConditionalObjects.Editor
             switch (source.propertyType)
             {
                 case SerializedPropertyType.Enum:
+#if UNITY_2021_1_OR_NEWER
                     property.intValue = source.IsEnumFlags()
                         ? source.enumValueFlag
                         : source.enumValueIndex;
+#else
+                    property.intValue = source.enumValueIndex;
+#endif
                     break;
                 case SerializedPropertyType.Integer:
                 case SerializedPropertyType.LayerMask:
