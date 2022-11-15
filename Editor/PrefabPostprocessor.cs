@@ -17,6 +17,7 @@ namespace Gilzoide.ConditionalObjects.Editor
 
             bool isEditor = EditorDependency.IsEditor;
             bool isDevelopment = DevelopmentDependency.IsDevelopment;
+            string[] scriptingDefineSymbols = ScriptingDefineSymbolsDependency.ScriptingDefineSymbols;
             foreach (FilteredObjectModifier objectModifier in foundComponents)
             {
                 if (objectModifier.EditorFilter != EditorFilter.None)
@@ -27,14 +28,15 @@ namespace Gilzoide.ConditionalObjects.Editor
                 {
                     context.DependsOnCustomDependency(DevelopmentDependency.DependencyName);
                 }
+                if (!objectModifier.ScriptingDefineConstraints.IsEmpty)
+                {
+                    context.DependsOnCustomDependency(ScriptingDefineSymbolsDependency.DependencyName);
+                }
                 BuildTarget selectedBuildTarget = objectModifier.PlatformFilter.IsEmpty
                     ? BuildTarget.NoTarget
                     : context.selectedBuildTarget;
-                if (objectModifier.ShouldApply(isEditor, isDevelopment, selectedBuildTarget))
-                {
-                    objectModifier.Apply();
-                }
-                Object.DestroyImmediate((Object) objectModifier, true);
+                objectModifier.Apply(isEditor, isDevelopment, selectedBuildTarget, scriptingDefineSymbols);
+                Object.DestroyImmediate(objectModifier, true);
             }
         }
     }

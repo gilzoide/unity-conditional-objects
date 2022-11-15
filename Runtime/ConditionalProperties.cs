@@ -1,4 +1,3 @@
-using Gilzoide.ConditionalObjects.Filters;
 using UnityEngine;
 
 namespace Gilzoide.ConditionalObjects
@@ -9,17 +8,15 @@ namespace Gilzoide.ConditionalObjects
         [Space]
         public PropertyVariant[] Properties;
 
-        public override void Apply()
+        protected override void Apply(bool filtersMatch)
         {
-            foreach (PropertyVariant variant in Properties)
+            if (filtersMatch)
             {
-                variant.Apply();
+                foreach (PropertyVariant variant in Properties)
+                {
+                    variant.Apply();
+                }
             }
-        }
-
-        protected override IncludeMode GetApplyIncludeMode()
-        {
-            return IncludeMode.Include;
         }
 #endif
     }

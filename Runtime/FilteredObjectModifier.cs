@@ -10,6 +10,7 @@ namespace Gilzoide.ConditionalObjects
         [Header("Conditions")]
         public EditorFilter EditorFilter;
         public DevelopmentFilter DevelopmentFilter;
+        public ScriptingDefineSymbolsFilter ScriptingDefineConstraints;
         public PlatformFilter PlatformFilter;
 
         private void Start()
@@ -17,43 +18,22 @@ namespace Gilzoide.ConditionalObjects
             // no-op, but needed to be able to disable the component
         }
 
-        public bool ShouldApply(bool isEditor, bool isDevelopment, BuildTarget buildTarget)
+        public void Apply(bool isEditor, bool isDevelopment, BuildTarget buildTarget, string[] scriptingDefineSymbols)
         {
             if (!enabled)
             {
-                return false;
+                return;
             }
 
-            switch (GetApplyIncludeMode())
-            {
-                case IncludeMode.Include:
-                    return IsIncluded(isEditor, isDevelopment, buildTarget);
-                
-                case IncludeMode.Exclude:
-                    return IsExcluded(isEditor, isDevelopment, buildTarget);
-                
-                default:
-                    return false;
-            }
+            bool filtersMatch = EditorFilter.Match(isEditor)
+                && DevelopmentFilter.Match(isDevelopment)
+                && PlatformFilter.Match(buildTarget)
+                && ScriptingDefineConstraints.Match(scriptingDefineSymbols);
+
+            Apply(filtersMatch);
         }
 
-        public abstract void Apply();
-
-        protected bool IsIncluded(bool isEditor, bool isDevelopment, BuildTarget buildTarget)
-        {
-            return EditorFilter.IsIncluded(isEditor)
-                && DevelopmentFilter.IsIncluded(isDevelopment)
-                && PlatformFilter.IsPlatformIncluded(buildTarget);
-        }
-
-        protected bool IsExcluded(bool isEditor, bool isDevelopment, BuildTarget buildTarget)
-        {
-            return EditorFilter.IsExcluded(isEditor)
-                && DevelopmentFilter.IsExcluded(isDevelopment)
-                && PlatformFilter.IsPlatformExcluded(buildTarget);
-        }
-        
-        protected abstract IncludeMode GetApplyIncludeMode();
+        protected abstract void Apply(bool filtersMatch);
 #endif
     }
 }

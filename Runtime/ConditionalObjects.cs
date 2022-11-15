@@ -1,4 +1,3 @@
-using Gilzoide.ConditionalObjects.Filters;
 using UnityEngine;
 
 namespace Gilzoide.ConditionalObjects
@@ -9,17 +8,15 @@ namespace Gilzoide.ConditionalObjects
         [Space]
         public Object[] TargetObjects;
 
-        public override void Apply()
+        protected override void Apply(bool filtersMatch)
         {
-            foreach (Object obj in TargetObjects)
+            if (!filtersMatch)
             {
-                DestroyImmediate(obj, true);
+                foreach (Object obj in TargetObjects)
+                {
+                    DestroyImmediate(obj, true);
+                }
             }
-        }
-
-        protected override IncludeMode GetApplyIncludeMode()
-        {
-            return IncludeMode.Exclude;
         }
 #endif
     }

@@ -11,7 +11,7 @@ namespace Gilzoide.ConditionalObjects.Filters
 
     public static class EditorFilterExtensions
     {
-        public static bool IsIncluded(this EditorFilter filter, bool isEditor)
+        public static bool Match(this EditorFilter filter, bool isEditor)
         {
             switch (filter)
             {
@@ -23,24 +23,6 @@ namespace Gilzoide.ConditionalObjects.Filters
                 
                 case EditorFilter.BuiltPlayer:
                     return !isEditor;
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(filter));
-            }
-        }
-
-        public static bool IsExcluded(this EditorFilter filter, bool isEditor)
-        {
-            switch (filter)
-            {
-                case EditorFilter.None:
-                    return true;
-
-                case EditorFilter.Editor:
-                    return !isEditor;
-                
-                case EditorFilter.BuiltPlayer:
-                    return isEditor;
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(filter));

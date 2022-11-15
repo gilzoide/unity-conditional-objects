@@ -18,13 +18,11 @@ namespace Gilzoide.ConditionalObjects.Editor
             bool isEditor = EditorDependency.IsEditor;
             bool isDevelopment = DevelopmentDependency.IsDevelopment;
             BuildTarget selectedBuildTarget = EditorUserBuildSettings.activeBuildTarget;
+            string[] scriptingDefineSymbols = ScriptingDefineSymbolsDependency.ScriptingDefineSymbols;
             foreach (FilteredObjectModifier objectModifier in foundComponents)
             {
-                if (objectModifier.ShouldApply(isEditor, isDevelopment, selectedBuildTarget))
-                {
-                    objectModifier.Apply();
-                }
-                Object.DestroyImmediate((Object) objectModifier, true);
+                objectModifier.Apply(isEditor, isDevelopment, selectedBuildTarget, scriptingDefineSymbols);
+                Object.DestroyImmediate(objectModifier, true);
             }
         }
     }

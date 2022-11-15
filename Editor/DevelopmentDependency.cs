@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Gilzoide.ConditionalObjects.Editor
 {
-    public class DevelopmentDependency
+    public static class DevelopmentDependency
     {
 #if UNITY_2020_2_OR_NEWER
         public static bool IsDevelopment { get; private set; }

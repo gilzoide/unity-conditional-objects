@@ -7,6 +7,7 @@ All processing is done in the editor at import/build time, so there's no runtime
 - Supported conditions:
   + Editor vs Built player
   + Development vs Release build settings
+  + Scripting define symbols
   + Current platform
 - Conditionally change `GameObject` or `Component` properties with the [ConditionalProperties](Runtime/ConditionalProperties.cs) script, based on the supported conditions above (e.g.: setting different store URLs between Android and iOS)
 - Conditionally remove `GameObject`s or `Component`s with the [ConditionalObjects](Runtime/ConditionalObjects.cs) script, based on the supported conditions above (e.g.: setting up a debug object only in development builds)

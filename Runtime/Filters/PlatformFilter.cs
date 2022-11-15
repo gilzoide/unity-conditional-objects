@@ -13,14 +13,7 @@ namespace Gilzoide.ConditionalObjects.Filters
 
         public bool IsEmpty => Platforms.Count <= 0;
 
-        public bool IsPlatformExcluded(BuildTarget buildTarget)
-        {
-            return IsEmpty
-                || Filter == IncludeMode.Exclude && Platforms.Contains(buildTarget)
-                || Filter == IncludeMode.Include && !Platforms.Contains(buildTarget);
-        }
-
-        public bool IsPlatformIncluded(BuildTarget buildTarget)
+        public bool Match(BuildTarget buildTarget)
         {
             return IsEmpty
                 || Filter == IncludeMode.Include && Platforms.Contains(buildTarget)

@@ -1,8 +1,8 @@
-﻿using UnityEditor;
+﻿#if !UNITY_2020_2_OR_NEWER
+using UnityEditor;
 
 namespace Gilzoide.ConditionalObjects.Editor
 {
-#if !UNITY_2020_2_OR_NEWER
     [CustomEditor(typeof(FilteredObjectModifier), true)]
     public class FilteredObjectModifierEditor : UnityEditor.Editor
     {
@@ -16,5 +16,5 @@ namespace Gilzoide.ConditionalObjects.Editor
             DrawDefaultInspector();
         }
     }
-#endif
 }
+#endif
