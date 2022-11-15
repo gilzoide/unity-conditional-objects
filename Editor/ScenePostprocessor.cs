@@ -9,7 +9,11 @@ namespace Gilzoide.ConditionalObjects.Editor
         [PostProcessScene]
         static void OnPostprocessScene()
         {
+#if UNITY_2020_1_OR_NEWER
+            FilteredObjectModifier[] foundComponents = Object.FindObjectsOfType<FilteredObjectModifier>(true);
+#else
             FilteredObjectModifier[] foundComponents = Object.FindObjectsOfType<FilteredObjectModifier>();
+#endif
             if (foundComponents == null || foundComponents.Length == 0)
             {
                 return;

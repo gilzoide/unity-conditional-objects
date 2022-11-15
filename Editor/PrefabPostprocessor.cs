@@ -9,7 +9,7 @@ namespace Gilzoide.ConditionalObjects.Editor
     {
         void OnPostprocessPrefab(GameObject gameObject)
         {
-            FilteredObjectModifier[] foundComponents = gameObject.GetComponentsInChildren<FilteredObjectModifier>();
+            FilteredObjectModifier[] foundComponents = gameObject.GetComponentsInChildren<FilteredObjectModifier>(true);
             if (foundComponents == null || foundComponents.Length == 0)
             {
                 return;
