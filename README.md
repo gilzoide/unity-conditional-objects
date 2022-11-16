@@ -9,8 +9,9 @@ All processing is done in the editor at import/build time, so there's no runtime
   + Development vs Release build settings
   + Scripting define symbols
   + Active build platform
-- Conditionally modify `GameObject` or `Component` properties with the [PropertyModifier](Runtime/PropertyModifier.cs) script, based on the supported conditions above (e.g.: setting different store URLs between Android and iOS)
-- Conditionally keep/delete `GameObject`s or `Component`s with the [KeepObjectsModifier](Runtime/KeepObjectsModifier.cs)/[DeleteObjectsModifier](Runtime/DeleteObjectsModifier.cs) scripts, based on the supported conditions above (e.g.: setting up a debug object only in development builds)
+- Conditionally modify `GameObject` or `Component` properties with the [PropertyModifier](Runtime/PropertyModifier.cs) script (e.g.: setting different controller sprites between PlayStation and Xbox platforms)
+- Conditionally keep `GameObject`s or `Component`s with the [KeepObjectsModifier](Runtime/KeepObjectsModifier.cs) script (e.g.: keep a "Login with Google Play Games" button in Android only)
+- Conditionally delete `GameObject`s or `Component`s with the [DeleteObjectsModifier](Runtime/DeleteObjectsModifier.cs) script (e.g.: delete a debug button in release builds)
 
 
 ## How to install
@@ -23,14 +24,15 @@ https://github.com/gilzoide/unity-conditional-objects.git
 
 
 ## Unity support
-`ImportTimeObjectModifier` in Scenes are supported in all Unity versions. 
+`ImportTimeObjectModifier` in Scenes are supported in all Unity versions.
+
 Before Unity 2020.2, prefabs are only supported when directly instanced in scenes.
 
 
 ## Creating your own modifier
 1. Create a script that inherits from [ImportTimeObjectModifier](Runtime/ImportTimeObjectModifier.cs)
 2. Implement the abstract `void Apply(bool filtersMatch)` method inside a `#if UNITY_EDITOR` block.
-   Check out any of the builtin scripts for an example.
-3. Add the script to your Prefabs/Scenes
+   Check out the [DeleteObjectsModifier](Runtime/DeleteObjectsModifier.cs) script for an example.
+3. Add the script to your game objects in Prefabs/Scenes
 
-Whenever a prefab with your script is imported or a scene is processed (played in editor or built), the modifier will be applied and immediately destroyed.
+Whenever a prefab with your script is reimported or a scene is processed (either played in editor or built), the modifier will be applied and immediately destroyed.
