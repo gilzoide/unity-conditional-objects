@@ -1,5 +1,5 @@
 # Conditional Objects
-Unity scripts for conditionally changing object properties or removing objects from Scenes and Prefabs.
+Scripts that modify `GameObject`s and `Component`s at Prefab/Scene import time, based on build configurations.
 All processing is done in the editor at import/build time, so there's no runtime penalty in built players.
 
 
@@ -8,9 +8,9 @@ All processing is done in the editor at import/build time, so there's no runtime
   + Editor vs Built player
   + Development vs Release build settings
   + Scripting define symbols
-  + Current platform
-- Conditionally change `GameObject` or `Component` properties with the [ConditionalProperties](Runtime/ConditionalProperties.cs) script, based on the supported conditions above (e.g.: setting different store URLs between Android and iOS)
-- Conditionally remove `GameObject`s or `Component`s with the [ConditionalObjects](Runtime/ConditionalObjects.cs) script, based on the supported conditions above (e.g.: setting up a debug object only in development builds)
+  + Active build platform
+- Conditionally modify `GameObject` or `Component` properties with the [PropertyModifier](Runtime/PropertyModifier.cs) script, based on the supported conditions above (e.g.: setting different store URLs between Android and iOS)
+- Conditionally keep/delete `GameObject`s or `Component`s with the [KeepObjectsModifier](Runtime/KeepObjectsModifier.cs)/[DeleteObjectsModifier](Runtime/DeleteObjectsModifier.cs) scripts, based on the supported conditions above (e.g.: setting up a debug object only in development builds)
 
 
 ## How to install
@@ -23,5 +23,14 @@ https://github.com/gilzoide/unity-conditional-objects.git
 
 
 ## Unity support
-`ConditionalObjects` and `ConditionalProperties` in Scenes are supported in all Unity versions. 
+`ImportTimeObjectModifier` in Scenes are supported in all Unity versions. 
 Before Unity 2020.2, prefabs are only supported when directly instanced in scenes.
+
+
+## Creating your own modifier
+1. Create a script that inherits from [ImportTimeObjectModifier](Runtime/ImportTimeObjectModifier.cs)
+2. Implement the abstract `void Apply(bool filtersMatch)` method inside a `#if UNITY_EDITOR` block.
+   Check out any of the builtin scripts for an example.
+3. Add the script to your Prefabs/Scenes
+
+Whenever a prefab with your script is imported or a scene is processed (played in editor or built), the modifier will be applied and immediately destroyed.
