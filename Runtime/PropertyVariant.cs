@@ -8,7 +8,8 @@ namespace Gilzoide.ConditionalObjects
     [Serializable]
     public class PropertyVariant
     {
-        public Object Target;
+        public GameObject GameObject;
+        public int ComponentIndex;
         public string PropertyPath;
 
         public bool Boolean;
@@ -32,6 +33,8 @@ namespace Gilzoide.ConditionalObjects
 #if UNITY_2021_1_OR_NEWER
         public Hash128 Hash128;
 #endif
+
+        public Object Target => GameObject.ComponentAtIndexOrSelf(ComponentIndex);
 
 #if UNITY_EDITOR
         public void Apply()

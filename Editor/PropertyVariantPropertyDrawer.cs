@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -14,17 +15,22 @@ namespace Gilzoide.ConditionalObjects.Editor
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            SerializedProperty target = property.FindPropertyRelative(nameof(PropertyVariant.Target));
+            SerializedProperty gameObject = property.FindPropertyRelative(nameof(PropertyVariant.GameObject));
+            SerializedProperty componentIndex = property.FindPropertyRelative(nameof(PropertyVariant.ComponentIndex));
             SerializedProperty propertyPath = property.FindPropertyRelative(nameof(PropertyVariant.PropertyPath));
             
-            position.height = EditorGUI.GetPropertyHeight(target);
-            EditorGUI.PropertyField(position, target);
+            position.height = EditorGUI.GetPropertyHeight(gameObject);
+            EditorGUI.PropertyField(position, gameObject);
+            position.y += EditorGUIUtility.standardVerticalSpacing + position.height;
+            
+            ShowComponentInput(position, gameObject.objectReferenceValue as GameObject, componentIndex);
             position.y += EditorGUIUtility.standardVerticalSpacing + position.height;
 
-            using (new EditorGUI.DisabledScope(target.objectReferenceValue == null))
+            Object target = (gameObject.objectReferenceValue as GameObject).ComponentAtIndexOrSelf(componentIndex.intValue);
+            using (new EditorGUI.DisabledScope(target == null))
             {
-                (string[] objectPropertyNames, int index) = GetProperties(target.objectReferenceValue, propertyPath.stringValue);
-                int newIndex = EditorGUI.Popup(position, propertyPath.name, index, objectPropertyNames);
+                (string[] objectPropertyNames, int index) = GetProperties(target, propertyPath.stringValue);
+                int newIndex = EditorGUI.Popup(position, "Property Path", index, objectPropertyNames);
                 if (newIndex >= 0 && newIndex < objectPropertyNames.Length)
                 {
                     string selectedProperty = objectPropertyNames[newIndex].Replace("/", ".");
@@ -37,19 +43,23 @@ namespace Gilzoide.ConditionalObjects.Editor
                     {
                         CopySerializedProperty(variantProperty, referencedProperty);
                     }
-                    ShowInput(position, variantProperty, referencedProperty);
+                    ShowPropertyInput(position, variantProperty, referencedProperty);
                 }
             }
         }
         
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            SerializedProperty target = property.FindPropertyRelative(nameof(PropertyVariant.Target));
+            SerializedProperty gameObject = property.FindPropertyRelative(nameof(PropertyVariant.GameObject));
+            SerializedProperty componentIndex = property.FindPropertyRelative(nameof(PropertyVariant.ComponentIndex));
             SerializedProperty propertyPath = property.FindPropertyRelative(nameof(PropertyVariant.PropertyPath));
-            float height = EditorGUI.GetPropertyHeight(target)
+            float height = EditorGUI.GetPropertyHeight(gameObject)
+                + EditorGUIUtility.standardVerticalSpacing
+                + EditorGUI.GetPropertyHeight(componentIndex)
                 + EditorGUIUtility.standardVerticalSpacing
                 + EditorGUI.GetPropertyHeight(propertyPath);
             
+            Object target = (gameObject.objectReferenceValue as GameObject).ComponentAtIndexOrSelf(componentIndex.intValue);
             SerializedProperty referencedProperty = GetReferencedProperty(target, propertyPath);
             if (referencedProperty != null)
             {
@@ -58,7 +68,28 @@ namespace Gilzoide.ConditionalObjects.Editor
             return height;
         }
 
-        private void ShowInput(Rect position, SerializedProperty variantProperty, SerializedProperty referenceProperty)
+        private void ShowComponentInput(Rect position, GameObject gameObject, SerializedProperty componentIndexProperty)
+        {
+            var componentNames = new List<string>();
+            foreach (Component component in gameObject.GetAllComponents())
+            {
+                string typeName = component.GetType().Name;
+                int nameCount = componentNames.Count(name => name == typeName);
+                if (nameCount > 0)
+                {
+                    typeName += " " + (nameCount + 1);
+                }
+                componentNames.Add(typeName);
+            }
+            componentNames.Add("GameObject");
+
+            using (new EditorGUI.DisabledScope(gameObject == null))
+            {
+                componentIndexProperty.intValue = EditorGUI.Popup(position, "Target", componentIndexProperty.intValue, componentNames.ToArray());
+            }
+        }
+
+        private void ShowPropertyInput(Rect position, SerializedProperty variantProperty, SerializedProperty referenceProperty)
         {
             switch (referenceProperty.propertyType)
             {
@@ -291,10 +322,10 @@ namespace Gilzoide.ConditionalObjects.Editor
             return (subproperties.ToArray(), index);
         }
 
-        private SerializedProperty GetReferencedProperty(SerializedProperty target, SerializedProperty propertyPath)
+        private SerializedProperty GetReferencedProperty(Object target, SerializedProperty propertyPath)
         {
-            return target.objectReferenceValue != null
-                ? new SerializedObject(target.objectReferenceValue).FindProperty(propertyPath.stringValue)
+            return target != null
+                ? new SerializedObject(target).FindProperty(propertyPath.stringValue)
                 : null;
         }
     }
