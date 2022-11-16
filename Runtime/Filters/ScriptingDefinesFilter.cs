@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using System;
 #if UNITY_2019_3_OR_NEWER
 using UnityEditor.Compilation;
@@ -43,3 +44,4 @@ namespace Gilzoide.ConditionalObjects.Filters
         }
     }
 }
+#endif

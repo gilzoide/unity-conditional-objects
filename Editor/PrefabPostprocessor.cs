@@ -9,7 +9,7 @@ namespace Gilzoide.ConditionalObjects.Editor
     {
         void OnPostprocessPrefab(GameObject gameObject)
         {
-            FilteredObjectModifier[] foundComponents = gameObject.GetComponentsInChildren<FilteredObjectModifier>(true);
+            ImportTimeObjectModifier[] foundComponents = gameObject.GetComponentsInChildren<ImportTimeObjectModifier>(true);
             if (foundComponents == null || foundComponents.Length == 0)
             {
                 return;
@@ -18,7 +18,7 @@ namespace Gilzoide.ConditionalObjects.Editor
             bool isEditor = EditorDependency.IsEditor;
             bool isDevelopment = DevelopmentDependency.IsDevelopment;
             string[] scriptingDefineSymbols = ScriptingDefineSymbolsDependency.ScriptingDefineSymbols;
-            foreach (FilteredObjectModifier objectModifier in foundComponents)
+            foreach (ImportTimeObjectModifier objectModifier in foundComponents)
             {
                 if (objectModifier.EditorFilter != EditorFilter.None)
                 {

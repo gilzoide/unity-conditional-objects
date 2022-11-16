@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using UnityEditor;
@@ -7,7 +8,6 @@ namespace Gilzoide.ConditionalObjects.Filters
     [Serializable]
     public class PlatformFilter
     {
-#if UNITY_EDITOR
         public IncludeMode Filter;
         public List<BuildTarget> Platforms;
 
@@ -19,6 +19,6 @@ namespace Gilzoide.ConditionalObjects.Filters
                 || Filter == IncludeMode.Include && Platforms.Contains(buildTarget)
                 || Filter == IncludeMode.Exclude && !Platforms.Contains(buildTarget);
         }
-#endif
     }
 }
+#endif

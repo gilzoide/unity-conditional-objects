@@ -4,13 +4,25 @@ using UnityEngine;
 
 namespace Gilzoide.ConditionalObjects
 {
-    public abstract class FilteredObjectModifier : MonoBehaviour
+    public abstract class ImportTimeObjectModifier : MonoBehaviour
     {
 #if UNITY_EDITOR
         [Header("Conditions")]
+        
+        [Tooltip("Filter between Editor vs Build Players. Use None to bypass this filter")]
         public EditorFilter EditorFilter;
+        
+        [Tooltip("Filter between Development vs Release build configuration. Use None to bypass this filter")]
         public DevelopmentFilter DevelopmentFilter;
+
+#if UNITY_2019_3_OR_NEWER
+        [Tooltip("Filter based on scripting symbols defined when compiling the project. Negating symbols with `!` and the logical operator `||` (OR) are supported.")]
+#else
+        [Tooltip("Filter based on scripting symbols defined when compiling project. Negating symbols with `!` is supported.")]
+#endif
         public ScriptingDefineSymbolsFilter ScriptingDefineConstraints;
+        
+        [Tooltip("Filter based on the active build platform")]
         public PlatformFilter PlatformFilter;
 
         private void Start()

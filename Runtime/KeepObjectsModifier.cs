@@ -2,10 +2,11 @@ using UnityEngine;
 
 namespace Gilzoide.ConditionalObjects
 {
-    public class ConditionalObjects : FilteredObjectModifier
+    public class KeepObjectsModifier : ImportTimeObjectModifier
     {
 #if UNITY_EDITOR
         [Space]
+        [Tooltip("Objects that should be kept in the imported prefab/scene only if the conditions above are met")]
         public Object[] TargetObjects;
 
         protected override void Apply(bool filtersMatch)
