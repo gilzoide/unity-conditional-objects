@@ -71,17 +71,20 @@ namespace Gilzoide.ConditionalObjects.Editor
         private void ShowComponentInput(Rect position, GameObject gameObject, SerializedProperty componentIndexProperty)
         {
             var componentNames = new List<string>();
-            foreach (Component component in gameObject.GetAllComponents())
+            if (gameObject != null)
             {
-                string typeName = component.GetType().Name;
-                int nameCount = componentNames.Count(name => name == typeName);
-                if (nameCount > 0)
+                foreach (Component component in gameObject.GetAllComponents())
                 {
-                    typeName += " " + (nameCount + 1);
+                    string typeName = component.GetType().Name;
+                    int nameCount = componentNames.Count(name => name == typeName);
+                    if (nameCount > 0)
+                    {
+                        typeName += " " + (nameCount + 1);
+                    }
+                    componentNames.Add(typeName);
                 }
-                componentNames.Add(typeName);
+                componentNames.Add("GameObject");
             }
-            componentNames.Add("GameObject");
 
             using (new EditorGUI.DisabledScope(gameObject == null))
             {
