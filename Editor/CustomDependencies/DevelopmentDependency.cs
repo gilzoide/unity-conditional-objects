@@ -6,8 +6,14 @@ namespace Gilzoide.ConditionalObjects.Editor
     public static class DevelopmentDependency
     {
 #if UNITY_2020_2_OR_NEWER
-        public static bool IsDevelopment { get; private set; }
+        public static bool IsDevelopment
+        {
+            get => _isDevelopment;
+            internal set => MarkIsDevelopment(value);
+        }
         public static readonly string DependencyName = $"{typeof(DevelopmentDependency).FullName}.{nameof(IsDevelopment)}";
+        
+        private static bool _isDevelopment;
 
         [InitializeOnLoadMethod]
         private static void TrackDevelopmentBuild()
@@ -18,7 +24,7 @@ namespace Gilzoide.ConditionalObjects.Editor
 
         private static void Update()
         {
-            if (IsDevelopment != EditorUserBuildSettings.development)
+            if (!BuildPipeline.isBuildingPlayer && IsDevelopment != EditorUserBuildSettings.development)
             {
                 MarkIsDevelopment(EditorUserBuildSettings.development);
             }
@@ -26,8 +32,8 @@ namespace Gilzoide.ConditionalObjects.Editor
 
         private static void MarkIsDevelopment(bool isDevelopment)
         {
-            IsDevelopment = isDevelopment;
-            AssetDatabase.RegisterCustomDependency(DependencyName, Hash128.Compute(IsDevelopment.ToString()));
+            _isDevelopment = isDevelopment;
+            AssetDatabase.RegisterCustomDependency(DependencyName, Hash128.Compute(isDevelopment.ToString()));
         }
 #else
         public static bool IsDevelopment => EditorUserBuildSettings.development;
