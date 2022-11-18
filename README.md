@@ -36,3 +36,9 @@ Before Unity 2020.2, prefabs are only supported when directly instanced in scene
 3. Add the script to your game objects in Prefabs/Scenes
 
 Whenever a prefab with your script is reimported or a scene is processed (either played in editor or built), the modifier will be applied and immediately destroyed.
+
+
+## Known issues
+- `UNITY_EDITOR` and `DEVELOPMENT_BUILD` scripting define symbols are not detected correctly during builds, use the dedicated Editor and Development filters instead
+- Extra scripting define symbols passed to `BuildPipeline.BuildPlayer` are not detected correctly during builds
+- Property modifier values inspector does not use custom property drawers, not even Unity default ones like `Multiline` and `Range`
