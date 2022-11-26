@@ -11,7 +11,7 @@ namespace Gilzoide.ConditionalObjects.Filters
     {
         public string[] DefineConstraints;
 
-        public bool IsEmpty => DefineConstraints.Length <= 0;
+        public bool IsEmpty => DefineConstraints == null || DefineConstraints.Length <= 0;
 
         public bool Match(string[] defines)
         {
