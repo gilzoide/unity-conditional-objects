@@ -11,7 +11,7 @@ namespace Gilzoide.ConditionalObjects.Editor
     public static class ScriptingDefineSymbolsDependency
     {
 #if UNITY_2017_3_OR_NEWER
-        public static string[] ScriptingDefineSymbols => CompilationPipeline.GetAssemblies().First(asm => asm.name == "Assembly-CSharp").defines;
+        public static string[] ScriptingDefineSymbols => CompilationPipeline.GetAssemblies()[0].defines;
 #else
         public static string[] ScriptingDefineSymbols => PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup).Split(";");
 #endif
