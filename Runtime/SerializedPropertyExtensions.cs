@@ -49,11 +49,11 @@ namespace Gilzoide.ConditionalObjects
 
             foreach (string propertyName in property.propertyPath.Split('.'))
             {
-                if (type.GetProperty(propertyName, _findPropertyBindingFlags) is PropertyInfo prop)
+                if (type.GetProperty(propertyName, _bindingFlags) is PropertyInfo prop)
                 {
                     type = prop.PropertyType;
                 }
-                else if (type.GetField(propertyName, _findPropertyBindingFlags) is FieldInfo field)
+                else if (type.GetField(propertyName, _bindingFlags) is FieldInfo field)
                 {
                     type = field.FieldType;
                 }
@@ -66,6 +66,38 @@ namespace Gilzoide.ConditionalObjects
 
             _propertyTypesCache[cacheKey] = type;
             return type;
+        }
+
+        public static FieldInfo FindFieldInfo(this SerializedProperty property)
+        {
+            Type type = property.serializedObject.targetObject.GetType();
+            string cacheKey = $"{type}.{property.propertyPath}";
+            if (_propertyFieldInfoCache.TryGetValue(cacheKey, out FieldInfo ret))
+            {
+                return ret;
+            }
+
+            FieldInfo fieldInfo = null;
+            foreach (string propertyName in property.propertyPath.Split('.'))
+            {
+                if (type.GetProperty(propertyName, _bindingFlags) is PropertyInfo prop)
+                {
+                    type = prop.PropertyType;
+                }
+                else if (type.GetField(propertyName, _bindingFlags) is FieldInfo field)
+                {
+                    fieldInfo = field;
+                    type = field.FieldType;
+                }
+                else
+                {
+                    type = null;
+                    break;
+                }
+            }
+
+            _propertyFieldInfoCache[cacheKey] = fieldInfo;
+            return fieldInfo;
         }
 
         public static void ResetObjectIfTypeMismatches(this SerializedProperty property, Type objectType)
@@ -114,7 +146,7 @@ namespace Gilzoide.ConditionalObjects
             return gameObject.ComponentAtIndexOrSelf(componentIndex);
         }
 
-        private const BindingFlags _findPropertyBindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+        private const BindingFlags _bindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
         private static IList<Type> ObjectSubclasses => _objectSubclasses != null ? _objectSubclasses : (_objectSubclasses = FindObjectSubclasses());
         private static IList<Type> _objectSubclasses;
         private static readonly Regex _propertyTypeRegex = new Regex(@"\s*PPtr\W*(\w+)");
@@ -132,9 +164,10 @@ namespace Gilzoide.ConditionalObjects
         }
 
         private static readonly Dictionary<string, Type> _propertyTypesCache = new Dictionary<string, Type>();
+        private static readonly Dictionary<string, FieldInfo> _propertyFieldInfoCache = new Dictionary<string, FieldInfo>();
 
 #if !UNITY_2022_1_OR_NEWER
-        private static readonly PropertyInfo SerializedProperty_gradientValue = typeof(SerializedProperty).GetProperty("gradientValue", _findPropertyBindingFlags);
+        private static readonly PropertyInfo SerializedProperty_gradientValue = typeof(SerializedProperty).GetProperty("gradientValue", _bindingFlags);
 #endif
     }
 }

@@ -41,4 +41,3 @@ Whenever a prefab with your script is reimported or a scene is processed (either
 ## Known issues
 - `UNITY_EDITOR` and `DEVELOPMENT_BUILD` scripting define symbols are not detected correctly during builds, use the dedicated Editor and Development filters instead
 - Extra scripting define symbols passed to `BuildPipeline.BuildPlayer` are not detected correctly during builds
-- Property modifier values inspector does not use custom property drawers, not even Unity default ones like `Multiline` and `Range`

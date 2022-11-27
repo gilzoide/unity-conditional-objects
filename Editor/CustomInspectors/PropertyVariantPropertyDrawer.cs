@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -40,8 +39,8 @@ namespace Gilzoide.ConditionalObjects.Editor
                     {
                         CopySerializedProperty(variantProperty, referencedProperty);
                     }
-                    position.height = EditorGUI.GetPropertyHeight(variantProperty);
-                    ShowPropertyInput(position, variantProperty, referencedProperty);
+                    position.height = EditorGUI.GetPropertyHeight(referencedProperty);
+                    DrawVariantProperty(position, variantProperty, referencedProperty, _valueTitle);
                 }
             }
         }
@@ -57,13 +56,20 @@ namespace Gilzoide.ConditionalObjects.Editor
             SerializedProperty referencedProperty = GetReferencedProperty(target.GetGameObjectOrComponent(), propertyPath);
             if (referencedProperty != null)
             {
-                height += EditorGUIUtility.standardVerticalSpacing + EditorGUI.GetPropertyHeight(GetVariantProperty(property, referencedProperty), true);
+                height += EditorGUIUtility.standardVerticalSpacing + EditorGUI.GetPropertyHeight(referencedProperty, true);
             }
             return height;
         }
 
-        private void ShowPropertyInput(Rect position, SerializedProperty variantProperty, SerializedProperty referenceProperty)
+        private static void DrawVariantProperty(Rect position, SerializedProperty variantProperty, SerializedProperty referenceProperty, GUIContent label)
         {
+            PropertyDrawer propertyDrawer = CustomPropertyDrawerFinder.FindPropertyDrawer(referenceProperty.FindFieldInfo());
+            if (propertyDrawer != null)
+            {
+                propertyDrawer.OnGUI(position, variantProperty, label);
+                return;
+            }
+
             switch (referenceProperty.propertyType)
             {
                 case SerializedPropertyType.Integer:
@@ -82,27 +88,28 @@ namespace Gilzoide.ConditionalObjects.Editor
                 case SerializedPropertyType.Vector2Int:
                 case SerializedPropertyType.Vector3Int:
                 case SerializedPropertyType.Quaternion:
+                case SerializedPropertyType.Gradient:
 #if UNITY_2021_1_OR_NEWER
                 case SerializedPropertyType.Hash128:
 #endif
-                    EditorGUI.PropertyField(position, variantProperty, _valueTitle, true);
+                    EditorGUI.PropertyField(position, variantProperty, label, true);
                     break;
                 
                 case SerializedPropertyType.Enum:
                     if (referenceProperty.IsEnumFlags())
                     {
-                        variantProperty.intValue = EditorGUI.MaskField(position, _valueTitle, variantProperty.intValue, referenceProperty.enumDisplayNames);
+                        variantProperty.intValue = EditorGUI.MaskField(position, label, variantProperty.intValue, referenceProperty.enumDisplayNames);
                     }
                     else
                     {
-                        variantProperty.intValue = EditorGUI.Popup(position, _valueTitle.text, variantProperty.intValue, referenceProperty.enumDisplayNames);
+                        variantProperty.intValue = EditorGUI.Popup(position, label.text, variantProperty.intValue, referenceProperty.enumDisplayNames);
                     }
                     break;
                 
                 case SerializedPropertyType.LayerMask:
                 {
                     int layerMask = InternalEditorUtility.LayerMaskToConcatenatedLayersMask(variantProperty.intValue);
-                    layerMask = EditorGUI.MaskField(position, _valueTitle, layerMask, InternalEditorUtility.layers);
+                    layerMask = EditorGUI.MaskField(position, label, layerMask, InternalEditorUtility.layers);
                     variantProperty.intValue = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(layerMask);
                     break;
                 }
@@ -111,26 +118,18 @@ namespace Gilzoide.ConditionalObjects.Editor
                 {
                     Type objectType = referenceProperty.FindObjectType();
                     variantProperty.ResetObjectIfTypeMismatches(objectType);
-                    variantProperty.objectReferenceValue = EditorGUI.ObjectField(position, _valueTitle, variantProperty.objectReferenceValue, objectType, true);
+                    variantProperty.objectReferenceValue = EditorGUI.ObjectField(position, label, variantProperty.objectReferenceValue, objectType, true);
                     break;
                 }
 
                 case SerializedPropertyType.Character:
                 {
-                    string c = EditorGUI.TextField(position, _valueTitle, variantProperty.stringValue);
+                    string c = EditorGUI.TextField(position, label, variantProperty.stringValue);
                     if (c.Length > 1)
                     {
                         c = c.Substring(0, 1);
                     }
                     variantProperty.stringValue = c;
-                    break;
-                }
-
-                case SerializedPropertyType.Gradient:
-                {
-                    Gradient gradient = variantProperty.GetGradient();
-                    gradient = EditorGUI.GradientField(position, _valueTitle, gradient);
-                    variantProperty.SetGradient(gradient);
                     break;
                 }
             }
