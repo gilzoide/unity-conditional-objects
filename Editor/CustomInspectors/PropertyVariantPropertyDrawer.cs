@@ -70,6 +70,25 @@ namespace Gilzoide.ConditionalObjects.Editor
                 return;
             }
 
+            if (referenceProperty.serializedObject.targetObject is GameObject)
+            {
+                if (referenceProperty.propertyPath == "m_TagString")
+                {
+                    variantProperty.stringValue = EditorGUI.TagField(position, label, variantProperty.stringValue);
+                    return;
+                }
+                if (referenceProperty.propertyPath == "m_Layer")
+                {
+                    variantProperty.intValue = EditorGUI.LayerField(position, label, variantProperty.intValue);
+                    return;
+                }
+                if (referenceProperty.propertyPath == "m_StaticEditorFlags")
+                {
+                    variantProperty.intValue = EditorGUI.MaskField(position, label, variantProperty.intValue, typeof(StaticEditorFlags).GetEnumNames());
+                    return;
+                }
+            }
+
             switch (referenceProperty.propertyType)
             {
                 case SerializedPropertyType.Integer:
