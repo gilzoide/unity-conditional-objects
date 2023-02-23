@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Gilzoide.ConditionalObjects
 {
-    public class KeepObjectsModifier : ImportTimeObjectModifier
+    public class KeepObjectsModifier : AImportTimeObjectModifier
     {
 #if UNITY_EDITOR
         [Space]

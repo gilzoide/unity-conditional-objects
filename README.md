@@ -24,13 +24,13 @@ https://github.com/gilzoide/unity-conditional-objects.git
 
 
 ## Unity support
-`ImportTimeObjectModifier` in Scenes are supported in all Unity versions.
+`AImportTimeObjectModifier` in Scenes are supported in all Unity versions.
 
 Before Unity 2020.2, prefabs are only supported when directly instanced in scenes.
 
 
 ## Creating your own modifier
-1. Create a script that inherits from [ImportTimeObjectModifier](Runtime/ImportTimeObjectModifier.cs)
+1. Create a script that inherits from [AImportTimeObjectModifier](Runtime/AImportTimeObjectModifier.cs)
 2. Implement the abstract `void Apply(bool filtersMatch)` method inside a `#if UNITY_EDITOR` block.
    Check out the [DeleteObjectsModifier](Runtime/DeleteObjectsModifier.cs) script for an example.
 3. Add the script to your game objects in Prefabs/Scenes

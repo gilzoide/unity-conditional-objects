@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Gilzoide.ConditionalObjects
 {
-    public abstract class ImportTimeObjectModifier : MonoBehaviour
+    public abstract class AImportTimeObjectModifier : MonoBehaviour
     {
 #if UNITY_EDITOR
         [Header("Conditions")]
@@ -18,7 +18,7 @@ namespace Gilzoide.ConditionalObjects
 #if UNITY_2019_3_OR_NEWER
         [Tooltip("Filter based on scripting symbols defined when compiling the project. Negating symbols with `!` and the logical operator `||` (OR) are supported.")]
 #else
-        [Tooltip("Filter based on scripting symbols defined when compiling project. Negating symbols with `!` is supported.")]
+        [Tooltip("Filter based on scripting symbols defined when compiling the project. Negating symbols with `!` is supported.")]
 #endif
         public ScriptingDefineSymbolsFilter ScriptingDefineConstraints;
         
@@ -27,7 +27,7 @@ namespace Gilzoide.ConditionalObjects
 
         private void Start()
         {
-            // no-op, but needed to be able to disable the component
+            // no-op, but defined to be able to disable the component
         }
 
         public void Apply(bool isEditor, bool isDevelopment, BuildTarget buildTarget, string[] scriptingDefineSymbols)

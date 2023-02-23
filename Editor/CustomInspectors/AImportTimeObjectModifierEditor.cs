@@ -3,8 +3,8 @@ using UnityEditor;
 
 namespace Gilzoide.ConditionalObjects.Editor
 {
-    [CustomEditor(typeof(ImportTimeObjectModifier), true)]
-    public class ImportTimeObjectModifierEditor : UnityEditor.Editor
+    [CustomEditor(typeof(AImportTimeObjectModifier), true)]
+    public class AImportTimeObjectModifierEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {

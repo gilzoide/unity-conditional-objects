@@ -10,9 +10,9 @@ namespace Gilzoide.ConditionalObjects.Editor
         static void OnPostprocessScene()
         {
 #if UNITY_2020_1_OR_NEWER
-            ImportTimeObjectModifier[] foundComponents = Object.FindObjectsOfType<ImportTimeObjectModifier>(true);
+            AImportTimeObjectModifier[] foundComponents = Object.FindObjectsOfType<AImportTimeObjectModifier>(true);
 #else
-            ImportTimeObjectModifier[] foundComponents = Object.FindObjectsOfType<ImportTimeObjectModifier>();
+            AImportTimeObjectModifier[] foundComponents = Object.FindObjectsOfType<AImportTimeObjectModifier>();
 #endif
             if (foundComponents == null || foundComponents.Length == 0)
             {
@@ -23,7 +23,7 @@ namespace Gilzoide.ConditionalObjects.Editor
             bool isDevelopment = DevelopmentDependency.IsDevelopment;
             BuildTarget selectedBuildTarget = EditorUserBuildSettings.activeBuildTarget;
             string[] scriptingDefineSymbols = ScriptingDefineSymbolsDependency.ScriptingDefineSymbols;
-            foreach (ImportTimeObjectModifier objectModifier in foundComponents)
+            foreach (AImportTimeObjectModifier objectModifier in foundComponents)
             {
                 objectModifier.Apply(isEditor, isDevelopment, selectedBuildTarget, scriptingDefineSymbols);
                 Object.DestroyImmediate(objectModifier, true);
