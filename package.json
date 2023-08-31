@@ -1,7 +1,7 @@
 {
   "name": "com.gilzoide.conditional-objects",
   "displayName": "Conditional Objects",
-  "version": "1.0.0",
+  "version": "1.0.0-preview1",
   "description": "Scripts that modify GameObjects and Components at Prefab/Scene import time, based on build configurations",
   "homepage": "https://github.com/gilzoide/unity-conditional-objects",
   "license": "Unlicense",

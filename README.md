@@ -19,7 +19,7 @@ Install via [Unity Package Manager](https://docs.unity3d.com/Manual/upm-ui-gitur
 using the following URL:
 
 ```
-https://github.com/gilzoide/unity-conditional-objects.git
+https://github.com/gilzoide/unity-conditional-objects.git#1.0.0-preview1
 ```
 
 
