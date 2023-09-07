@@ -230,8 +230,10 @@ namespace Gilzoide.ConditionalObjects.Editor
                     property.floatValue = source.floatValue;
                     break;
                 case SerializedPropertyType.String:
-                case SerializedPropertyType.Character:
                     property.stringValue = source.stringValue;
+                    break;
+                case SerializedPropertyType.Character:
+                    property.stringValue = new string(new[] { (char) source.intValue });
                     break;
                 case SerializedPropertyType.Color:
                     property.colorValue = source.colorValue;
