@@ -12,9 +12,8 @@ namespace Gilzoide.ConditionalObjects.Editor
             SerializedProperty platforms = property.FindPropertyRelative(nameof(PlatformFilter.Platforms));
             if (platforms.arraySize > 0)
             {
-                SerializedProperty filter = property.FindPropertyRelative(nameof(PlatformFilter.Filter));
-                IncludeMode filterType = (IncludeMode) filter.enumValueIndex;
-                label.text += $": {(filterType == IncludeMode.Include ? "" : "! ")}{string.Join(", ", platforms.IterateEnumArrayStrings())}";
+                IncludeMode filterType = (IncludeMode) property.FindPropertyRelative(nameof(PlatformFilter.Filter)).enumValueIndex;
+                label.text += $": {(filterType == IncludeMode.Include ? "" : "!(")}{string.Join(" | ", platforms.IterateEnumArrayStrings())}{(filterType == IncludeMode.Include ? "" : ")")}";
             }
             else
             {
