@@ -107,6 +107,34 @@ namespace Gilzoide.ConditionalObjects
             }
             return embeddedPreset.Preset;
         }
+
+        public void HandleAssetDelete(string assetPath)
+        {
+            DeletePresetsFromAsset(assetPath);
+        }
+
+        public void HandleAssetSave(string[] paths)
+        {
+            foreach (string assetPath in paths)
+            {
+                DeletePresetsFromAsset(assetPath);
+            }
+        }
+
+        private void DeletePresetsFromAsset(string assetPath)
+        {
+            var guid = new GUID(AssetDatabase.AssetPathToGUID(assetPath));
+            _embeddedPresets.RemoveAll(p =>
+            {
+                bool shouldRemove = p.ObjectId.GlobalObjectId.assetGUID == guid
+                    && GlobalObjectId.GlobalObjectIdentifierToObjectSlow(p.ObjectId) == null;
+                if (shouldRemove)
+                {
+                    DestroyImmediate(p.Preset, true);
+                }
+                return shouldRemove;
+            });
+        }
     }
 }
 #endif
