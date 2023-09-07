@@ -19,6 +19,10 @@ namespace Gilzoide.ConditionalObjects
         public static void GetIncludedProperties(this Preset preset, HashSet<string> set)
         {
             set.Clear();
+            if (preset.PropertyModifications == null)
+            {
+                return;
+            }
             set.UnionWith(preset.PropertyModifications.Select(prop => prop.propertyPath));
             set.UnionWith(preset.PropertyModifications.Select(prop => prop.propertyPath.Split('.', 2)[0]));
         }

@@ -6,7 +6,7 @@ namespace Gilzoide.ConditionalObjects
     {
 #if UNITY_EDITOR
         [Space]
-        [Tooltip("Properties that should be modified in the imported prefab/scene if the conditions above are met")]
+        [Tooltip("Target object that will be modified in the imported prefab/scene if the conditions above are met")]
         public GameObjectOrComponent Target;
 
         protected override void Apply(bool filtersMatch)

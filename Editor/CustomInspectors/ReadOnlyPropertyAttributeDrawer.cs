@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Gilzoide.ConditionalObjects.Editor
 {
-    [CustomPropertyDrawer(typeof(ReadOnlyPropertyAttribute))]
+    [CustomPropertyDrawer(typeof(ReadOnlyPropertyAttribute)), CanEditMultipleObjects]
     public class ReadOnlyPropertyAttributeDrawer : PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
