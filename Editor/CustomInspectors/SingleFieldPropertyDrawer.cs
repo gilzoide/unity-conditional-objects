@@ -1,10 +1,9 @@
-using Gilzoide.ConditionalObjects.Filters;
 using UnityEditor;
 using UnityEngine;
 
 namespace Gilzoide.ConditionalObjects.Editor
 {
-    [CustomPropertyDrawer(typeof(ScriptingDefineSymbolsFilter))]
+    [CustomPropertyDrawer(typeof(ISingleFieldProperty), true)]
     public class SingleFieldPropertyDrawer : PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)

@@ -7,7 +7,7 @@ using UnityEditor.Compilation;
 namespace Gilzoide.ConditionalObjects.Filters
 {
     [Serializable]
-    public class ScriptingDefineSymbolsFilter
+    public class ScriptingDefineSymbolsFilter : ISingleFieldProperty
     {
         public string[] DefineConstraints;
 
