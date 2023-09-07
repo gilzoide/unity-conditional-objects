@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Gilzoide.ConditionalObjects
 {
@@ -6,7 +8,7 @@ namespace Gilzoide.ConditionalObjects
     {
         public static Component[] GetAllComponents(this GameObject gameObject)
         {
-            return gameObject != null ? gameObject.GetComponents<Component>() : new Component[0];
+            return gameObject != null ? gameObject.GetComponents<Component>() : Array.Empty<Component>();
         }
         
         public static Object ComponentAtIndexOrSelf(this GameObject gameObject, int index)

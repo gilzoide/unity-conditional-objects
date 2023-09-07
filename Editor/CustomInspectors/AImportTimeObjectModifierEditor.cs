@@ -1,5 +1,4 @@
-﻿#if !UNITY_2020_2_OR_NEWER
-using UnityEditor;
+﻿using UnityEditor;
 
 namespace Gilzoide.ConditionalObjects.Editor
 {
@@ -8,13 +7,14 @@ namespace Gilzoide.ConditionalObjects.Editor
     {
         public override void OnInspectorGUI()
         {
+#if !UNITY_2020_2_OR_NEWER
             if (target.IsPartOfPrefab())
             {
                 EditorGUILayout.HelpBox($"{target.GetType().Name} in Prefab will only work when prefab is instanced in scenes. Use Unity 2020.2+ for full prefab support.", MessageType.Warning);
             }
+#endif
 
             DrawDefaultInspector();
         }
     }
 }
-#endif

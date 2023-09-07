@@ -7,15 +7,17 @@ namespace Gilzoide.ConditionalObjects
 #if UNITY_EDITOR
         [Space]
         [Tooltip("Properties that should be modified in the imported prefab/scene if the conditions above are met")]
-        public PropertyVariant[] Properties;
+        public GameObjectOrComponent Target;
 
         protected override void Apply(bool filtersMatch)
         {
-            if (filtersMatch)
+            Object target = Target.Object;
+            if (filtersMatch && target != null)
             {
-                foreach (PropertyVariant variant in Properties)
+                UnityEditor.Presets.Preset preset = EmbeddedPresetHolder.Instance.GetPreset(this, target);
+                if (preset != null)
                 {
-                    variant.Apply();
+                    preset.ApplyTo(target);
                 }
             }
         }
