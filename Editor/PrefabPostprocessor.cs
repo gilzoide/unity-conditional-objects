@@ -1,6 +1,8 @@
 #if UNITY_2020_2_OR_NEWER
+using System.Collections.Generic;
 using Gilzoide.ConditionalObjects.Filters;
 using UnityEditor;
+using UnityEditor.Presets;
 using UnityEngine;
 
 namespace Gilzoide.ConditionalObjects.Editor
@@ -14,6 +16,8 @@ namespace Gilzoide.ConditionalObjects.Editor
             {
                 return;
             }
+
+            var referencedPresets = new HashSet<Preset>();
 
             bool isEditor = EditorDependency.IsEditor;
             bool isDevelopment = DevelopmentDependency.IsDevelopment;
@@ -32,12 +36,18 @@ namespace Gilzoide.ConditionalObjects.Editor
                 {
                     context.DependsOnCustomDependency(ScriptingDefineSymbolsDependency.DependencyName);
                 }
+                if (objectModifier is PropertyModifier propertyModifier && propertyModifier._preset != null)
+                {
+                    referencedPresets.Add(propertyModifier._preset);
+                }
                 BuildTarget selectedBuildTarget = objectModifier.PlatformFilter.IsEmpty
                     ? BuildTarget.NoTarget
                     : context.selectedBuildTarget;
                 objectModifier.Apply(isEditor, isDevelopment, selectedBuildTarget, scriptingDefineSymbols);
                 Object.DestroyImmediate(objectModifier, true);
             }
+
+            EmbeddedPresetHolder.Instance.DeleteOrphanPresets(context.assetPath, referencedPresets);
         }
     }
 }

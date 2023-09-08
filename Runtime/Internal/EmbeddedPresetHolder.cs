@@ -36,98 +36,60 @@ namespace Gilzoide.ConditionalObjects
         [Serializable]
         public class EmbeddedPreset
         {
-            public SerializableGlobalObjectId ObjectId;
+            public GUID AssetGuid;
             public Preset Preset;
         }
 
         [SerializeField] private List<EmbeddedPreset> _embeddedPresets = new List<EmbeddedPreset>();
 
-        public Preset GetPreset(Object owner, Object target)
+        public Preset CreatePreset(GameObject ownerObject, Object target)
         {
-            GlobalObjectId objectId = GlobalObjectId.GetGlobalObjectIdSlow(owner);
-            if (objectId.assetGUID.Empty())
-            {
-                return null;
-            }
-
-            if (_embeddedPresets.Find(p => objectId.Equals(p.ObjectId)) is EmbeddedPreset embeddedPreset
-                && embeddedPreset.Preset != null
-                && embeddedPreset.Preset.CanBeAppliedTo(target))
-            {
-                return embeddedPreset.Preset;
-            }
-            else
-            {
-                return null;
-            }
+            string assetPath = ownerObject.GetAssetPath();
+            return CreatePreset(AssetDatabase.AssetPathToGUID(assetPath), target);
         }
 
-        public Preset GetOrCreatePreset(GlobalObjectId objectId, Object target)
+        public Preset CreatePreset(string assetGuid, Object target)
         {
-            if (objectId.assetGUID.Empty())
+            if (string.IsNullOrEmpty(AssetDatabase.GUIDToAssetPath(assetGuid)))
             {
-                return null;
+                throw new ArgumentOutOfRangeException(nameof(assetGuid), "GUID is not know in AssetDatabase");
             }
 
-            if (_embeddedPresets.Find(p => objectId.Equals(p.ObjectId)) is EmbeddedPreset embeddedPreset)
+            var preset = new Preset(target)
             {
-                if (target == null)
-                {
-                    DestroyImmediate(embeddedPreset.Preset, true);
-                    _embeddedPresets.RemoveAll(p => objectId.Equals(p.ObjectId));
-                    return null;
-                }
-                else if (!embeddedPreset.Preset.CanBeAppliedTo(target))
-                {
-                    DestroyImmediate(embeddedPreset.Preset, true);
-                }
-            }
-            else if (target == null)
+                name = $"{assetGuid}-{GlobalObjectId.GetGlobalObjectIdSlow(target).targetObjectId}",
+            };
+            preset.ExcludeAllProperties();
+            _embeddedPresets.Add(new EmbeddedPreset
             {
-                return null;
-            }
-            else
-            {
-                embeddedPreset = new EmbeddedPreset
-                {
-                    ObjectId = objectId,
-                };
-                _embeddedPresets.Add(embeddedPreset);
-            }
-
-            if (embeddedPreset.Preset == null)
-            {
-                embeddedPreset.Preset = new Preset(target)
-                {
-                    name = objectId.ToString(),
-                };
-                embeddedPreset.Preset.ExcludeAllProperties();
-                AssetDatabase.AddObjectToAsset(embeddedPreset.Preset, this);
-                EditorUtility.SetDirty(this);
-            }
-            return embeddedPreset.Preset;
+                AssetGuid = new GUID(assetGuid),
+                Preset = preset,
+            });
+            AssetDatabase.AddObjectToAsset(preset, this);
+            AssetDatabase.SaveAssetIfDirty(this);
+            return preset;
         }
 
         public void HandleAssetDelete(string assetPath)
         {
-            DeletePresetsFromAsset(assetPath);
-        }
-
-        public void HandleAssetSave(string[] paths)
-        {
-            foreach (string assetPath in paths)
+            var guid = new GUID(AssetDatabase.AssetPathToGUID(assetPath));
+            _embeddedPresets.RemoveAll(p =>
             {
-                DeletePresetsFromAsset(assetPath);
-            }
+                bool shouldRemove = p.AssetGuid == guid;
+                if (shouldRemove)
+                {
+                    DestroyImmediate(p.Preset, true);
+                }
+                return shouldRemove;
+            });
         }
 
-        private void DeletePresetsFromAsset(string assetPath)
+        public void DeleteOrphanPresets(string assetPath, HashSet<Preset> referencedPresets)
         {
             var guid = new GUID(AssetDatabase.AssetPathToGUID(assetPath));
             _embeddedPresets.RemoveAll(p =>
             {
-                bool shouldRemove = p.ObjectId.GlobalObjectId.assetGUID == guid
-                    && GlobalObjectId.GlobalObjectIdentifierToObjectSlow(p.ObjectId) == null;
+                bool shouldRemove = p.AssetGuid == guid && !referencedPresets.Contains(p.Preset);
                 if (shouldRemove)
                 {
                     DestroyImmediate(p.Preset, true);

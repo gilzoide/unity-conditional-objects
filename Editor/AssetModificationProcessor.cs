@@ -9,11 +9,5 @@ namespace Gilzoide.ConditionalObjects.Editor
             EmbeddedPresetHolder.Instance.HandleAssetDelete(assetPath);
             return AssetDeleteResult.DidNotDelete;
         }
-
-        static string[] OnWillSaveAssets(string[] paths)
-        {
-            EmbeddedPresetHolder.Instance.HandleAssetSave(paths);
-            return paths;
-        }
     }
 }

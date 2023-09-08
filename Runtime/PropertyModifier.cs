@@ -1,3 +1,4 @@
+using UnityEditor.Presets;
 using UnityEngine;
 
 namespace Gilzoide.ConditionalObjects
@@ -8,17 +9,14 @@ namespace Gilzoide.ConditionalObjects
         [Space]
         [Tooltip("Target object that will be modified in the imported prefab/scene if the conditions above are met")]
         public GameObjectOrComponent Target;
+        [SerializeField, ReadOnlyProperty] internal Preset _preset;
 
         protected override void Apply(bool filtersMatch)
         {
             Object target = Target.Object;
-            if (filtersMatch && target != null)
+            if (filtersMatch && target != null && _preset != null)
             {
-                UnityEditor.Presets.Preset preset = EmbeddedPresetHolder.Instance.GetPreset(this, target);
-                if (preset != null)
-                {
-                    preset.ApplyTo(target);
-                }
+                _preset.ApplyTo(target);
             }
         }
 #endif

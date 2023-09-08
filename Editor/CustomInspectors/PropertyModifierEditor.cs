@@ -9,16 +9,14 @@ namespace Gilzoide.ConditionalObjects.Editor
     {
         private SerializedProperty _gameObjectProperty;
         private SerializedProperty _componentIndexProperty;
-        private GlobalObjectId _serializedObjectId;
-        private Preset _preset;
+        private SerializedProperty _presetProperty;
         private UnityEditor.Editor _presetEditor;
 
         void OnEnable()
         {
             _gameObjectProperty = serializedObject.FindProperty($"{nameof(PropertyModifier.Target)}.{nameof(GameObjectOrComponent.GameObject)}");
             _componentIndexProperty = serializedObject.FindProperty($"{nameof(PropertyModifier.Target)}.{nameof(GameObjectOrComponent.ComponentIndex)}");
-            _serializedObjectId = GlobalObjectId.GetGlobalObjectIdSlow(target);
-            _preset = EmbeddedPresetHolder.Instance.GetOrCreatePreset(_serializedObjectId, GetTarget());
+            _presetProperty = serializedObject.FindProperty(nameof(PropertyModifier._preset));
         }
 
         void OnDisable()
@@ -33,21 +31,32 @@ namespace Gilzoide.ConditionalObjects.Editor
             Object previousTarget = GetTarget();
             DrawDefaultInspector();
             Object newTarget = GetTarget();
-            if (newTarget != previousTarget)
+            Preset preset = (Preset) _presetProperty.objectReferenceValue;
+            if (newTarget != previousTarget || preset == null || !preset.CanBeAppliedTo(newTarget))
             {
-                Undo.RecordObject(EmbeddedPresetHolder.Instance, "");
-                _preset = EmbeddedPresetHolder.Instance.GetOrCreatePreset(_serializedObjectId, newTarget);
+                if (newTarget == null)
+                {
+                    preset = null;
+                    _presetProperty.objectReferenceValue = null;
+                }
+                else
+                {
+                    preset = EmbeddedPresetHolder.Instance.CreatePreset(((Component) target).gameObject, newTarget);
+                    _presetProperty.objectReferenceValue = preset;
+                }
             }
 
-            if (_preset != null)
+            if (preset != null)
             {
-                if (_presetEditor == null || _presetEditor.target != _preset)
+                if (_presetEditor == null || _presetEditor.target != preset)
                 {
                     DestroyImmediate(_presetEditor);
-                    _presetEditor = CreateEditor(_preset);
+                    _presetEditor = CreateEditor(preset);
                 }
                 _presetEditor.OnInspectorGUI();
             }
+
+            serializedObject.ApplyModifiedProperties();
         }
 
         private Object GetTarget()

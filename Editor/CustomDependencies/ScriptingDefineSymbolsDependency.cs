@@ -1,4 +1,3 @@
-using System.Linq;
 using UnityEditor;
 using UnityEditor.Callbacks;
 #if UNITY_2017_3_OR_NEWER
