@@ -21,7 +21,7 @@ namespace Gilzoide.ConditionalObjects.Editor
             EditorGUI.PropertyField(position, target);
             position.y += EditorGUIUtility.standardVerticalSpacing + EditorGUI.GetPropertyHeight(target);
 
-            Object targetObject = target.GetGameObjectOrComponent();
+            Object targetObject = target.objectReferenceValue;
             using (new EditorGUI.DisabledScope(targetObject == null))
             {
                 (string[] objectPropertyNames, int index) = GetProperties(targetObject, propertyPath.stringValue);
@@ -53,7 +53,7 @@ namespace Gilzoide.ConditionalObjects.Editor
                 + EditorGUIUtility.standardVerticalSpacing
                 + EditorGUI.GetPropertyHeight(propertyPath);
             
-            SerializedProperty referencedProperty = GetReferencedProperty(target.GetGameObjectOrComponent(), propertyPath);
+            SerializedProperty referencedProperty = GetReferencedProperty(target.objectReferenceValue, propertyPath);
             if (referencedProperty != null)
             {
                 height += EditorGUIUtility.standardVerticalSpacing + EditorGUI.GetPropertyHeight(referencedProperty, true);

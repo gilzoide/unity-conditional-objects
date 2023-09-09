@@ -7,15 +7,18 @@ namespace Gilzoide.ConditionalObjects
 #if UNITY_EDITOR
         [Space]
         [Tooltip("Objects that should be kept in the imported prefab/scene only if the conditions above are met")]
-        public GameObjectOrComponent[] TargetObjects;
+        [GameObjectOrComponent] public Object[] TargetObjects;
 
         protected override void Apply(bool filtersMatch)
         {
             if (!filtersMatch)
             {
-                foreach (GameObjectOrComponent target in TargetObjects)
+                foreach (Object target in TargetObjects)
                 {
-                    DestroyImmediate(target.Object, true);
+                    if (target is Component || target is GameObject)
+                    {
+                        DestroyImmediate(target, true);
+                    }
                 }
             }
         }

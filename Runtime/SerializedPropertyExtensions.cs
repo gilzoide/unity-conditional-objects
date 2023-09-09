@@ -139,13 +139,6 @@ namespace Gilzoide.ConditionalObjects
 #endif
         }
 
-        public static Object GetGameObjectOrComponent(this SerializedProperty property)
-        {
-            GameObject gameObject = property.FindPropertyRelative(nameof(GameObjectOrComponent.GameObject)).objectReferenceValue as GameObject;
-            int componentIndex = property.FindPropertyRelative(nameof(GameObjectOrComponent.ComponentIndex)).intValue;
-            return gameObject.ComponentAtIndexOrSelf(componentIndex);
-        }
-
         private const BindingFlags _bindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
         private static IList<Type> ObjectSubclasses => _objectSubclasses != null ? _objectSubclasses : (_objectSubclasses = FindObjectSubclasses());
         private static IList<Type> _objectSubclasses;

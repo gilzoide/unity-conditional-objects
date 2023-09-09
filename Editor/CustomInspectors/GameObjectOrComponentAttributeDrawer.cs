@@ -6,6 +6,7 @@ using UnityEngine;
 namespace Gilzoide.ConditionalObjects.Editor
 {
     [CustomPropertyDrawer(typeof(GameObjectOrComponentAttribute))]
+    [CanEditMultipleObjects]
     public class SelectComponentAttributeDrawer : PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)

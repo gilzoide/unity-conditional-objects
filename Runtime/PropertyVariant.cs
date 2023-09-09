@@ -8,7 +8,7 @@ namespace Gilzoide.ConditionalObjects
     [Serializable]
     public class PropertyVariant
     {
-        public GameObjectOrComponent Target;
+        [GameObjectOrComponent] public Object Target;
         public string PropertyPath;
 
         public bool Boolean;
@@ -36,13 +36,12 @@ namespace Gilzoide.ConditionalObjects
 #if UNITY_EDITOR
         public void Apply()
         {
-            Object targetObject = Target.Object;
-            if (targetObject == null)
+            if (Target == null)
             {
                 return;
             }
 
-            SerializedObject obj = new SerializedObject(targetObject);
+            SerializedObject obj = new SerializedObject(Target);
             SerializedProperty property = obj.FindProperty(PropertyPath);
             switch (property.propertyType)
             {
