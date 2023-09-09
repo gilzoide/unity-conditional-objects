@@ -11,6 +11,8 @@ namespace Gilzoide.ConditionalObjects
 {
     public class EmbeddedPresetHolder : ScriptableObject
     {
+        #region Instance
+
         public static readonly string InstanceAssetPath = $"Assets/ConditionalObjects/Editor/{nameof(EmbeddedPresetHolder)}.asset";
 
         public static EmbeddedPresetHolder Instance => _instance ? _instance : (_instance = GetOrCreateInstance());
@@ -33,69 +35,98 @@ namespace Gilzoide.ConditionalObjects
             return instance;
         }
 
+        #endregion
+
         [Serializable]
-        public class EmbeddedPreset
+        internal class EmbeddedPresets : IComparable<EmbeddedPresets>
         {
             public GUID AssetGuid;
-            public Preset Preset;
+            public List<Preset> PresetList;
+
+            public int CompareTo(EmbeddedPresets other)
+            {
+                return AssetGuid.CompareTo(other.AssetGuid);
+            }
         }
 
-        [SerializeField] private List<EmbeddedPreset> _embeddedPresets = new List<EmbeddedPreset>();
+        [SerializeField] private List<EmbeddedPresets> _embeddedPresets = new List<EmbeddedPresets>();
 
         public Preset CreatePreset(GameObject ownerObject, Object target)
         {
             string assetPath = ownerObject.GetAssetPath();
-            return CreatePreset(AssetDatabase.AssetPathToGUID(assetPath), target);
-        }
-
-        public Preset CreatePreset(string assetGuid, Object target)
-        {
-            if (string.IsNullOrEmpty(AssetDatabase.GUIDToAssetPath(assetGuid)))
-            {
-                throw new ArgumentOutOfRangeException(nameof(assetGuid), "GUID is not know in AssetDatabase");
-            }
-
-            var preset = new Preset(target)
-            {
-                name = $"{assetGuid}-{GlobalObjectId.GetGlobalObjectIdSlow(target).targetObjectId}",
-            };
-            preset.ExcludeAllProperties();
-            _embeddedPresets.Add(new EmbeddedPreset
-            {
-                AssetGuid = new GUID(assetGuid),
-                Preset = preset,
-            });
-            AssetDatabase.AddObjectToAsset(preset, this);
-            AssetDatabase.SaveAssetIfDirty(this);
-            return preset;
+            return CreatePreset(assetPath, target);
         }
 
         public void HandleAssetDelete(string assetPath)
         {
-            var guid = new GUID(AssetDatabase.AssetPathToGUID(assetPath));
-            _embeddedPresets.RemoveAll(p =>
+            RemoveEmbeddedPresets(assetPath);
+        }
+
+        public void DeleteOrphanPresets(string assetPath, HashSet<Preset> referencedPresets)
+        {
+            GetEmbeddedPresets(assetPath)?.PresetList.RemoveAll(p =>
             {
-                bool shouldRemove = p.AssetGuid == guid;
+                bool shouldRemove = !referencedPresets.Contains(p);
                 if (shouldRemove)
                 {
-                    DestroyImmediate(p.Preset, true);
+                    DestroyImmediate(p, true);
                 }
                 return shouldRemove;
             });
         }
 
-        public void DeleteOrphanPresets(string assetPath, HashSet<Preset> referencedPresets)
+        private Preset CreatePreset(string assetPath, Object target)
         {
             var guid = new GUID(AssetDatabase.AssetPathToGUID(assetPath));
-            _embeddedPresets.RemoveAll(p =>
+            var preset = new Preset(target)
             {
-                bool shouldRemove = p.AssetGuid == guid && !referencedPresets.Contains(p.Preset);
-                if (shouldRemove)
-                {
-                    DestroyImmediate(p.Preset, true);
-                }
-                return shouldRemove;
-            });
+                name = $"{guid}-{GlobalObjectId.GetGlobalObjectIdSlow(target).targetObjectId}",
+                hideFlags = HideFlags.HideInHierarchy,
+            };
+            preset.ExcludeAllProperties();
+            AssetDatabase.AddObjectToAsset(preset, this);
+            GetOrCreateEmbeddedPresets(assetPath).PresetList.Add(preset);
+            return preset;
+        }
+
+        private EmbeddedPresets GetEmbeddedPresets(string assetPath)
+        {
+            var guid = new GUID(AssetDatabase.AssetPathToGUID(assetPath));
+            int index = _embeddedPresets.BinarySearch(new EmbeddedPresets { AssetGuid = guid });
+            if (index >= 0)
+            {
+                return _embeddedPresets[index];
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private EmbeddedPresets GetOrCreateEmbeddedPresets(string assetPath)
+        {
+            var guid = new GUID(AssetDatabase.AssetPathToGUID(assetPath));
+            int index = _embeddedPresets.BinarySearch(new EmbeddedPresets { AssetGuid = guid });
+            if (index >= 0)
+            {
+                return _embeddedPresets[index];
+            }
+            else
+            {
+                var embeddedPreset = new EmbeddedPresets { AssetGuid = guid, PresetList = new List<Preset>() };
+                _embeddedPresets.Insert(~index, embeddedPreset);
+                return embeddedPreset;
+            }
+        }
+
+        private void RemoveEmbeddedPresets(string assetPath)
+        {
+            var guid = new GUID(AssetDatabase.AssetPathToGUID(assetPath));
+            int index = _embeddedPresets.BinarySearch(new EmbeddedPresets { AssetGuid = guid });
+            if (index >= 0)
+            {
+                _embeddedPresets.RemoveAt(index);
+            }
         }
     }
 }
