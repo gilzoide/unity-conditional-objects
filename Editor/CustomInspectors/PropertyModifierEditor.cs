@@ -7,22 +7,19 @@ namespace Gilzoide.ConditionalObjects.Editor
     [CustomEditor(typeof(PropertyModifier))]
     public class PropertyModifierEditor : AImportTimeObjectModifierEditor
     {
-        private SerializedProperty _gameObjectProperty;
-        private SerializedProperty _componentIndexProperty;
+        private SerializedProperty _targetProperty;
         private SerializedProperty _presetProperty;
         private UnityEditor.Editor _presetEditor;
 
         void OnEnable()
         {
-            _gameObjectProperty = serializedObject.FindProperty($"{nameof(PropertyModifier.Target)}.{nameof(GameObjectOrComponent.GameObject)}");
-            _componentIndexProperty = serializedObject.FindProperty($"{nameof(PropertyModifier.Target)}.{nameof(GameObjectOrComponent.ComponentIndex)}");
+            _targetProperty = serializedObject.FindProperty($"{nameof(PropertyModifier.Target)}");
             _presetProperty = serializedObject.FindProperty(nameof(PropertyModifier._preset));
         }
 
         void OnDisable()
         {
-            _gameObjectProperty.Dispose();
-            _componentIndexProperty.Dispose();
+            _targetProperty.Dispose();
             DestroyImmediate(_presetEditor);
         }
 
@@ -66,7 +63,7 @@ namespace Gilzoide.ConditionalObjects.Editor
 
         private Object GetTarget()
         {
-            return ((GameObject) _gameObjectProperty.objectReferenceValue).ComponentAtIndexOrSelf(_componentIndexProperty.intValue);
+            return _targetProperty.objectReferenceValue;
         }
     }
 }
