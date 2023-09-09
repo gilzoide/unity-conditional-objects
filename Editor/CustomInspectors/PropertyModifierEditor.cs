@@ -53,7 +53,12 @@ namespace Gilzoide.ConditionalObjects.Editor
                     DestroyImmediate(_presetEditor);
                     _presetEditor = CreateEditor(preset);
                 }
+                EditorGUI.BeginChangeCheck();
                 _presetEditor.OnInspectorGUI();
+                if (EditorGUI.EndChangeCheck())
+                {
+                    AssetDatabase.SaveAssetIfDirty(EmbeddedPresetHolder.Instance);
+                }
             }
 
             serializedObject.ApplyModifiedProperties();

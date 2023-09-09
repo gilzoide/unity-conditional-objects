@@ -38,6 +38,7 @@ namespace Gilzoide.ConditionalObjects.Editor
                 }
                 if (objectModifier is PropertyModifier propertyModifier && propertyModifier._preset != null)
                 {
+                    context.DependsOnSourceAsset(EmbeddedPresetHolder.InstanceAssetPath);
                     referencedPresets.Add(propertyModifier._preset);
                 }
                 BuildTarget selectedBuildTarget = objectModifier.PlatformFilter.IsEmpty
