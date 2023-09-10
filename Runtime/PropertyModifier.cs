@@ -1,3 +1,4 @@
+using Gilzoide.ConditionalObjects.Internal;
 using UnityEngine;
 
 namespace Gilzoide.ConditionalObjects

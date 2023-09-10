@@ -16,5 +16,10 @@ namespace Gilzoide.ConditionalObjects.Editor
             }
             return false;
         }
+
+        public static Component[] GetAllComponents(this GameObject gameObject)
+        {
+            return gameObject != null ? gameObject.GetComponents<Component>() : new Component[0];
+        }
     }
 }

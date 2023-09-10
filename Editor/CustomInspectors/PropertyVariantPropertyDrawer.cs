@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Gilzoide.ConditionalObjects.Internal;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;

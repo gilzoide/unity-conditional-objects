@@ -1,4 +1,5 @@
 using Gilzoide.ConditionalObjects.Filters;
+using Gilzoide.ConditionalObjects.Internal;
 using UnityEditor;
 using UnityEngine;
 

@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System;
+using Gilzoide.ConditionalObjects.Internal;
 #if UNITY_2019_3_OR_NEWER
 using UnityEditor.Compilation;
 #endif
