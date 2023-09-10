@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Gilzoide.ConditionalObjects.Editor
 {
@@ -19,7 +21,7 @@ namespace Gilzoide.ConditionalObjects.Editor
 
         public static Component[] GetAllComponents(this GameObject gameObject)
         {
-            return gameObject != null ? gameObject.GetComponents<Component>() : new Component[0];
+            return gameObject != null ? gameObject.GetComponents<Component>() : Array.Empty<Component>();
         }
     }
 }
