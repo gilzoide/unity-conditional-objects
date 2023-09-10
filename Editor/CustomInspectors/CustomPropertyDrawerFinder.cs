@@ -45,6 +45,10 @@ namespace Gilzoide.ConditionalObjects.Editor
 
             foreach (Type propertyDrawerType in CustomPropertyDrawerTypes)
             {
+                if (!propertyDrawerType.IsSubclassOf(typeof(PropertyDrawer)))
+                {
+                    continue;
+                }
                 foreach (CustomPropertyDrawer customPropertyDrawer in propertyDrawerType.GetCustomAttributes<CustomPropertyDrawer>())
                 {
                     Type drawnType = CustomPropertyDrawer_Type.GetValue(customPropertyDrawer) as Type;
