@@ -21,7 +21,7 @@ namespace Gilzoide.ConditionalObjects.Editor
                 return propertyDrawer;
             }
 
-            PropertyAttribute attribute = field.GetCustomAttribute<PropertyAttribute>();
+            PropertyAttribute attribute = field.GetCustomAttributes<PropertyAttribute>().FirstOrDefault();
             Type propertyDrawerType = FindCustomPropertyDrawer(attribute);
             if (propertyDrawerType == null)
             {
